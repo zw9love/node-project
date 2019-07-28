@@ -19,6 +19,11 @@
     <div class="container">
         <h1>login</h1>
         <button class="captcha">获取验证码</button>
+        <form id="upload-form" enctype="multipart/form-data">
+            <input type="file" class="file-input" name="file">
+            <button class="upload-btn">点击上传</button>
+        </form>
+
     </div>
     <script>
         $('.captcha').click(function(){
@@ -31,6 +36,28 @@
                     $('.container').append(msg.img)
                 }
             });
+        })
+
+        $('.file-input').change(function(){
+            console.log($(this)[0].files)
+        })
+
+        $('.upload-btn').click(function(){
+            let formData = new FormData($('#upload-form')[0]);
+            formData.append('name', 'xxx')
+            $.ajax({
+                url: "/upload",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    console.log(data)
+                },
+                error: function (e) {
+                }
+            });
+            return false
         })
 
     </script>

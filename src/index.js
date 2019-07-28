@@ -13,7 +13,7 @@ const multer  = require('multer');
 const storage = multer.diskStorage({
     // //设置上传后文件路径，uploads文件夹会自动创建。
     destination: function (req, file, cb) {
-        cb(null, './upload')
+        cb(null, './uploads')
     },
     //给上传文件重命名，获取添加后缀名
     filename: function (req, file, cb) {
@@ -101,6 +101,17 @@ app.post('/captcha', (req, res, next) => {
         msg:captcha.text.toLowerCase()
     }
     res.send(codeData);
+})
+
+// 拿到FormData上传的参数
+// app.post('/upload', multipartMiddleware, function (request, response, next) {
+app.post('/upload', uploadInfo.single('file'), function (request, response, next) {
+    console.log(request.body, request.file)
+    try {
+        response.json({code: 200, message: 'hello world', data: ''});
+    }catch (e) {
+        response.json({code: 400, message: e, data: ''});
+    }
 })
 
 // 重定向页面
