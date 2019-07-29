@@ -8,58 +8,82 @@
     <link rel="stylesheet" href="./static/css/common.css">
     <title>login</title>
     <style>
-        .container{
+        .container {
             width: 1000px;
             margin: 0 auto;
         }
+
+        div, form {
+            margin-top: 20px;
+        }
     </style>
     <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script src="http://captcha.guard.qcloud.com/template/TCapIframeApi.js?appid=1253204159&clientype=2&lang=2052&asig=02EkKD3xKwjD-lMvfTpF54boJQAqDSm9BQdpsgq_b37kLEqF4vzMbu9iDRRyGWEwzcMW4sbfdR1gX5t4VaHAyThA2_L3tFyz"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>login</h1>
+<div class="container">
+    <h1>login</h1>
+    <div>
         <button class="captcha">获取验证码</button>
-        <form id="upload-form" enctype="multipart/form-data">
-            <input type="file" class="file-input" name="file">
-            <button class="upload-btn">点击上传</button>
-        </form>
-
     </div>
-    <script>
-        $('.captcha').click(function(){
-            $.ajax({
-                type: "POST",
-                url: "captcha",
-                data: "name=John&location=Boston",
-                success: function(msg){
-                    console.log(msg)
-                    $('.container').append(msg.img)
-                }
-            });
-        })
+    <div id="TCaptcha" style="width:300px;height:40px;"></div>
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" class="file-input" name="file">
+        <button class="upload-btn">点击上传</button>
+    </form>
 
-        $('.file-input').change(function(){
-            console.log($(this)[0].files)
-        })
+</div>
+<script>
+    $('.captcha').click(function () {
+        $.ajax({
+            type: "POST",
+            url: "captcha",
+            data: "name=John&location=Boston",
+            success: function (msg) {
+                console.log(msg)
+                $('.container').append(msg.img)
+            }
+        });
+    })
 
-        $('.upload-btn').click(function(){
-            let formData = new FormData($('#upload-form')[0]);
-            formData.append('name', 'xxx')
-            $.ajax({
-                url: "/upload",
-                type: "post",
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (data) {
-                    console.log(data)
-                },
-                error: function (e) {
-                }
-            });
-            return false
-        })
+    $('.file-input').change(function () {
+        console.log($(this)[0].files)
+    })
 
-    </script>
+    $('.upload-btn').click(function () {
+        let formData = new FormData($('#upload-form')[0]);
+        formData.append('name', 'xxx')
+        $.ajax({
+            url: "/upload",
+            type: "post",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                console.log(data)
+            },
+            error: function (e) {
+            }
+        });
+        return false
+    })
+
+</script>
+<script type="text/javascript">
+    var capOption = {callback: cbfn};
+    capInit(document.getElementById("TCaptcha"), capOption);
+
+    //回调函数：验证码页面关闭时回调
+    function cbfn(retJson) {
+        if (retJson.ret == 0) {
+            // 获取ticket，提交服务器校验时用
+            var ticket = retJson.ticket;
+            //这里提交服务器校验
+        }
+        else {
+            //用户关闭验证码页面，没有验证
+        }
+    }
+</script>
 </body>
 </html>
