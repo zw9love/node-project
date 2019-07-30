@@ -12,8 +12,7 @@
   "watch": [
     "src/index.js",
     "src/**/",
-    "public/static/**/",
-    "public/**"
+    "public/static/**/"
   ],
   "env": {
     "NODE_ENV": "development"

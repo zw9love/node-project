@@ -2,6 +2,7 @@
  @author zengwei
  @time 2019/7/27
  **/
+const child_process = require('child_process');
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -36,7 +37,7 @@ app.set('views', path.join(__dirname, '../public'))
 app.set('view engine', 'html')
 app.use(cookieParser())
 app.use(bodyParser.json());
-app.use('/static', express.static('public/static'));
+app.use('/', express.static('public'));
 
 const multipartMiddleware = multipart()
 const urlencodedParser = bodyParser.urlencoded({extended: false}) // 如果前台传递的类型是Form Data类型的数据
@@ -63,6 +64,25 @@ app.get('/', function (req, res) {
     res.send('Hello World');
 })
 
+/**
+ * @api {post} /api/user/submit-login 用户登录
+ * @apiDescription 用户登录
+ * @apiName submit-login
+ * @apiGroup User
+ * @apiParam {string} loginName 用户名
+ * @apiParam {string} loginPass 密码
+ * @apiSuccess {json} result
+ * @apiSuccessExample {json} Success-Response:
+ *  {
+ *      "success" : "true",
+ *      "result" : {
+ *          "name" : "loginName",
+ *          "password" : "loginPass"
+ *      }
+ *  }
+ * @apiSampleRequest http://localhost:3000/api/user/submit-login
+ * @apiVersion 1.0.3
+ */
 // 普通post
 app.post('/demo', function (req, res) {
     res.json({code: 200, message: 'hello world', data: req.body});
@@ -160,17 +180,19 @@ app.post('/upload', uploadInfo.single('file'), function (request, response, next
 })
 
 // 重定向页面
-app.get('*', (request, response, next) => {
-    // console.log(request.url)
-    response.writeHead(302, {'Location': '/login'})
-    response.end()
-})
+// app.get('*', (request, response, next) => {
+//     // console.log(request.url)
+//     response.writeHead(302, {'Location': '/login'})
+//     response.end()
+// })
 
 // 捕获所有的除了上述路由之外的post请求
 app.post('*', (request, response, next) => {
     console.log('post请求：' + request.url)
     next()
 })
+
+child_process.exec('apidoc -i src/ -o public/apidoc/', function (error, stdout, stderr) {});
 
 
 const server = app.listen(8080, function () {
