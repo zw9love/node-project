@@ -105,8 +105,8 @@ app.get('/loged', (req, res, next) => {
 
     if(req.session.loginUser){
         req.session.views++
-        var loginUser = req.session.loginUser
-        var isLogined = loginUser
+        let loginUser = req.session.loginUser
+        let isLogined = loginUser
         res.setHeader('Content-Type', 'text/html')
         res.render('view/loged', {
             isLogined: isLogined,
@@ -114,8 +114,15 @@ app.get('/loged', (req, res, next) => {
         })
     }else{
         req.session.views = 1
+        // res.setHeader('Content-Type', 'text/html')
+        // res.redirect('/login')
+        let loginUser = req.session.loginUser
+        let isLogined = loginUser
         res.setHeader('Content-Type', 'text/html')
-        res.redirect('/login')
+        res.render('view/loged', {
+            isLogined: isLogined,
+            name: loginUser || ''
+        })
     }
 })
 

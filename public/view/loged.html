@@ -10,5 +10,17 @@
 <% if(isLogined){ %>
 <p>当前登录用户：<%= name %>，<a href="/logout" id="logout">退出登陆</a></p>
 <% } %>
+<% if(!isLogined){ %>
+<p id="no-login">您还没登录，3秒后自动跳转到登录页</p>
+<% } %>
 </body>
+<script>
+    window.onload = function(){
+       if(document.getElementById('no-login')){
+           setTimeout(function(){
+               location.href = '/login'
+           }, 3000)
+       }
+    }
+</script>
 </html>
