@@ -5,7 +5,7 @@
     <meta content="yes" name="apple-mobile-web-app-capable">
     <meta name="viewport"
           content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
-    <link rel="stylesheet" href="./static/css/common.css">
+    <link rel="stylesheet" href="../static/css/common.css">
     <title>login</title>
     <style>
         .container {
@@ -31,6 +31,12 @@
         <input type="file" class="file-input" name="file">
         <button class="upload-btn">点击上传</button>
     </form>
+
+    <div>
+        <input type="text" id="name" name="name" value="admin" />
+        <input type="password" id="password" name="password" value="admin" />
+        <button id="login-btn">登录</button>
+    </div>
 
 </div>
 <script>
@@ -66,6 +72,33 @@
             }
         });
         return false
+    })
+
+    // session只能对于1个网站1号的限制，做不到多号
+    $('#login-btn').click(function(){
+        $.ajax({
+            url: '/login',
+            // type: 'get',
+            type: 'post',
+            data: {
+                name: $('#name').val(),
+                password: $('#password').val()
+            },
+            success: (data, textStatus, request) => {
+                if(data.status === 200){
+                   location.href = '/loged'
+                }else{
+                    alert(data.msg)
+                }
+            },
+            error: (XMLHttpRequest, textStatus, errorThrown) => {
+                // 通常 textStatus 和 errorThrown 之中
+                // 只有一个会包含信息
+                //this; // 调用本次AJAX请求时传递的options参数
+            },
+            // dataType: 'jsonp',
+            dataType: 'json'
+        })
     })
 
 </script>

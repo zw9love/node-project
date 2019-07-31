@@ -12,8 +12,8 @@
   "watch": [
     "src/index.js",
     "src/**/",
-    "public/static/**/",
-    "./apidoc.json"
+    "public/static/**",
+    "public/view/**"
   ],
   "env": {
     "NODE_ENV": "development"

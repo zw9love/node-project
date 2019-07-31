@@ -5,6 +5,7 @@
 const child_process = require('child_process');
 const express = require('express');
 const app = express();
+const session = require('express-session')
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const path = require('path');
@@ -44,14 +45,20 @@ const demoRouter = require('./routes/demo');
 const userRouter = require('./routes/user');
 app.use('/', demoRouter);
 app.use('/user', userRouter);
-
+app.use(session({
+    secret: '123456',
+    name: 'node',   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
+    cookie: {maxAge: 5 * 60 * 1000, secure: false },  //设置过期时间，session和相应的cookie失效过期
+    resave: false, // 关键配置，让每个用户的session互不干扰
+    saveUninitialized: true, // 是否自动保存未初始化的会话，建议false
+    // store: new RedisStore(this.storeOption)
+}));
 
 
 // 相当于拦截器，可用于全局检测token
 app.all("*", (req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*"); //设置允许客户端跨域请求
     res.header("Content-Type", "application/json;charset=UTF-8"); //设置响应头数据类型
-    // console.log(111)
     if (req.method === 'POST') {
         // console.log('先进我这')
         // checkToken(req, res, next, o => {
@@ -64,20 +71,71 @@ app.all("*", (req, res, next) => {
     }
 })
 
-// 普通get
-app.get('/', function (req, res) {
-    res.send('Hello World');
+// // 普通get
+app.post('/login', (req, res, next) => {
+    // console.log(req)
+    let name = req.body.name
+    let password = req.body.password
+    // console.log('name = ' + name)
+    // console.log('password = ' + password)
+    if(name === 'admin' && password === 'admin'){
+        // 重新生成session，sessionID自然也变了
+        req.session.regenerate(function(err) {
+            if(err) return res.json({ret_code: 2, ret_msg: '登录失败'});
+            req.session.loginUser = 'admin'
+            res.json({status: 200, data: null, msg: '成功'});
+        })
+    }else{
+        res.json({status: 606, data: null, msg: '用户名或密码错误'});
+    }
 })
 
 // 渲染页面
 app.get('/login', (request, response, next) => {
     response.setHeader('Content-Type', 'text/html')
-    response.render('login')
+    response.render('view/login')
     // fs.readFile('views/login.html', function (err, data) {
     //     response.writeHead(200, { 'Content-Type': 'text/html' });
     //     response.end(data.toString())
     // })
 })
+
+// 渲染页面
+app.get('/loged', (req, res, next) => {
+
+    if(req.session.loginUser){
+        req.session.views++
+        var loginUser = req.session.loginUser
+        var isLogined = loginUser
+        res.setHeader('Content-Type', 'text/html')
+        res.render('view/loged', {
+            isLogined: isLogined,
+            name: loginUser || ''
+        })
+    }else{
+        req.session.views = 1
+        res.setHeader('Content-Type', 'text/html')
+        res.redirect('/login')
+    }
+})
+
+// 退出登录
+app.get('/logout', function(req, res, next){
+    // 备注：这里用的 session-file-store 在destroy 方法里，并没有销毁cookie
+    // 所以客户端的 cookie 还是存在，导致的问题 --> 退出登陆后，服务端检测到cookie
+    // 然后去查找对应的 session 文件，报错
+    // session-file-store 本身的bug
+    req.session.destroy(function(err) {
+        if(err){
+            res.json({ret_code: 2, ret_msg: '退出登录失败'});
+            return;
+        }
+        // req.session.loginUser = null;
+        // res.clearCookie(identityKey);
+        res.redirect('/login');
+    });
+})
+
 
 // 测试下载链接
 app.get('/testdownload', (request, response, next) => {
@@ -120,11 +178,11 @@ app.post('/upload', uploadInfo.single('file'), function (request, response, next
 })
 
 // 重定向页面
-// app.get('*', (request, response, next) => {
-//     // console.log(request.url)
-//     response.writeHead(302, {'Location': '/login'})
-//     response.end()
-// })
+app.get('*', (request, response, next) => {
+    // console.log(request.url)
+    response.writeHead(302, {'Location': '/login'})
+    response.end()
+})
 
 // 捕获所有的除了上述路由之外的post请求
 app.post('*', (request, response, next) => {
