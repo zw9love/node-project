@@ -10,6 +10,7 @@
   "author": "zengwei",
   "license": "ISC",
   "dependencies": {
+    "apidoc": "^0.17.7",
     "async": "^3.1.0",
     "body-parser": "^1.19.0",
     "connect-multiparty": "^2.2.0",
