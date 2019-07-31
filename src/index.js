@@ -25,22 +25,27 @@ const storage = multer.diskStorage({
     }
 });
 let uploadInfo = multer({storage})
-let mysql = require('mysql');
-const fs = require('fs');
-let data = fs.readFileSync('./config.json')
-const databaseData = JSON.parse(data.toString())
-let connection = mysql.createConnection(databaseData);
 
+
+const urlencodedParser = bodyParser.urlencoded({extended: false}) // 如果前台传递的类型是Form Data类型的数据，Content-Type=application/x-www-form-urlencoded;charset=UTF-8 请求内容类型
+const jsonParser = bodyParser.json() // Content-Type=application/json;charset=utf-8 请求内容类型
 
 app.engine('html', require('ejs').renderFile)
 app.set('views', path.join(__dirname, '../public'))
 app.set('view engine', 'html')
 app.use(cookieParser())
-app.use(bodyParser.json());
+app.use(urlencodedParser);
 app.use('/', express.static('public'));
 
 const multipartMiddleware = multipart()
-const urlencodedParser = bodyParser.urlencoded({extended: false}) // 如果前台传递的类型是Form Data类型的数据
+
+// 路由
+const demoRouter = require('./routes/demo');
+const userRouter = require('./routes/user');
+app.use('/', demoRouter);
+app.use('/user', userRouter);
+
+
 
 // 相当于拦截器，可用于全局检测token
 app.all("*", (req, res, next) => {
@@ -64,35 +69,6 @@ app.get('/', function (req, res) {
     res.send('Hello World');
 })
 
-/**
- * @api {post} /api/user/submit-login 用户登录
- * @apiDescription 用户登录
- * @apiName submit-login
- * @apiGroup User
- * @apiParam {string} loginName 用户名
- * @apiParam {string} loginPass 密码
- * @apiSuccess {json} result
- * @apiSuccessExample {json} Success-Response:
- *  {
- *      "success" : "true",
- *      "result" : {
- *          "name" : "loginName",
- *          "password" : "loginPass"
- *      }
- *  }
- * @apiSampleRequest http://localhost:3000/api/user/submit-login
- * @apiVersion 1.0.3
- */
-// 普通post
-app.post('/demo', function (req, res) {
-    res.json({code: 200, message: 'hello world', data: req.body});
-})
-
-// 接口参数
-app.post('/params/:ids', (req, res, next) => {
-    res.json({code: 200, message: 'hello world', data: req.params.ids});
-})
-
 // 渲染页面
 app.get('/login', (request, response, next) => {
     response.setHeader('Content-Type', 'text/html')
@@ -109,43 +85,7 @@ app.get('/testdownload', (request, response, next) => {
     response.download(path)
 })
 
-// 获取数据库list
-app.get('/getlist', (request, response, next) => {
-    connection.connect();
-    let sql = 'SELECT * FROM user';
-    connection.query(sql, function (err, result) {
-        if (err) {
-            console.log('[SELECT ERROR] - ', err.message);
-            return;
-        }
-        console.log('--------------------------SELECT----------------------------');
-        console.log(result);
-        response.json({code: 200, message: 'hello world', data: result});
-        console.log('------------------------------------------------------------\n\n');
-    });
-    connection.end();
-})
 
-// 增加实例
-app.post('/add', (request, response, next) => {
-    connection.connect();
-    let {name, age, id} = request.body
-    let sql = 'INSERT INTO user(id,name,age) VALUES(?,?,?)';
-    let sqlParams = [id || 0, name || '', age || '0']
-    console.log(sqlParams)
-    connection.query(sql, sqlParams, function (err, result) {
-        if (err) {
-            console.log('[SELECT ERROR] - ', err.message);
-            next()
-            return;
-        }
-        console.log('--------------------------SELECT----------------------------');
-        console.log(result);
-        response.json({code: 200, message: 'hello world', data: ''});
-        console.log('------------------------------------------------------------\n\n');
-    });
-    connection.end();
-})
 
 // 测试验证码
 app.post('/captcha', (req, res, next) => {
@@ -189,11 +129,12 @@ app.post('/upload', uploadInfo.single('file'), function (request, response, next
 // 捕获所有的除了上述路由之外的post请求
 app.post('*', (request, response, next) => {
     console.log('post请求：' + request.url)
+    response.json({code: 404, message:"Can not find it", data: ''})
     next()
 })
 
-child_process.exec('apidoc -i src/ -o public/apidoc/', function (error, stdout, stderr) {});
 
+child_process.exec('apidoc -i src/ -o public/apidoc/', function (error, stdout, stderr) {});
 
 const server = app.listen(8080, function () {
 
