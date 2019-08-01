@@ -207,7 +207,7 @@ const server = app.listen(8080, function () {
     const port = server.address().port
 
     console.log("应用实例，访问地址为 http://localhost:" + port)
-    openDefaultBrowser("http://localhost:" + port)
+    // openDefaultBrowser("http://localhost:" + port)
 })
 
 const openDefaultBrowser = function (url) {
