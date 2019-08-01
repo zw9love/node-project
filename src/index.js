@@ -57,7 +57,7 @@ app.use(session({
 
 // 相当于拦截器，可用于全局检测token
 app.all("*", (req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*"); //设置允许客户端跨域请求
+    // res.header("Access-Control-Allow-Origin", "*"); //设置允许客户端跨域请求
     res.header("Content-Type", "application/json;charset=UTF-8"); //设置响应头数据类型
     if (req.method === 'POST') {
         // console.log('先进我这')
