@@ -207,5 +207,20 @@ const server = app.listen(8080, function () {
     const port = server.address().port
 
     console.log("应用实例，访问地址为 http://localhost:" + port)
-
+    openDefaultBrowser("http://localhost:" + port)
 })
+
+const openDefaultBrowser = function (url) {
+    var exec = child_process.exec;
+    // console.log(process.platform)
+    switch (process.platform) {
+        case "darwin":
+            exec('open ' + url);
+            break;
+        case "win32":
+            exec('start ' + url);
+            break;
+        default:
+            exec('xdg-open', [url]);
+    }
+}

@@ -13,7 +13,8 @@
     "src/index.js",
     "src/**/",
     "public/static/**",
-    "public/view/**"
+    "public/view/**",
+    "public/swagger/**"
   ],
   "env": {
     "NODE_ENV": "development"
