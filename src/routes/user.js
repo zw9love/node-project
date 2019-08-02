@@ -5,7 +5,6 @@ const fs = require('fs');
 let data = fs.readFileSync('./config.json')
 const databaseData = JSON.parse(data.toString())
 let connection = mysql.createConnection(databaseData);
-const async = require('async');
 let {execTrans, _getNewSqlParamEntity} = require('../utils/dbHelper')
 /**
  * @api {get} /user/getList 获取用户列表
