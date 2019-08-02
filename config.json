@@ -3,5 +3,7 @@
   "port": "3306",
   "database": "test",
   "user": "root",
-  "password": "159357"
+  "password": "159357",
+  "connectionLimit": 10,
+  "waitForConnections": false
 }

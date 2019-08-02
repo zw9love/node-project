@@ -186,6 +186,56 @@
   },
   {
     "type": "post",
+    "url": "/transaction",
+    "title": "测试事务",
+    "description": "<p>测试事务</p>",
+    "name": "_transaction",
+    "group": "user",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "money",
+            "defaultValue": "1",
+            "description": "<p>转钱数值</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "json",
+            "optional": false,
+            "field": "data",
+            "description": "<p>返回值</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n    \"code\": 200,\n    \"message\": \"hello world\",\n    \"data\": \"\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "sampleRequest": [
+      {
+        "url": "http://localhost:8080/user/transaction"
+      }
+    ],
+    "version": "1.0.0",
+    "filename": "src/routes/user.js",
+    "groupTitle": "user"
+  },
+  {
+    "type": "post",
     "url": "/user/add",
     "title": "增加用户",
     "description": "<p>增加用户</p>",
