@@ -5,6 +5,7 @@
 const child_process = require('child_process');
 const express = require('express');
 const app = express();
+const router = express.Router();
 const session = require('express-session')
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -43,6 +44,25 @@ const multipartMiddleware = multipart()
 // 路由
 const demoRouter = require('./routes/demo');
 const userRouter = require('./routes/user');
+
+
+
+// 相当于拦截器，可用于全局检测token
+app.all("*", (req, res, next) => {
+    // res.header("Access-Control-Allow-Origin", "*"); //设置允许客户端跨域请求
+    res.header("Content-Type", "application/json;charset=UTF-8"); //设置响应头数据类型
+    // console.log(req.method)
+    if (req.method === 'POST') {
+        // console.log('先进我这')
+        // if(!req.headers.token){
+        //     res.json({code: 606, message: '大哥你token呢？111', data: ''})
+        // }
+        next()
+    } else {
+        next()
+    }
+})
+
 app.use('/', demoRouter);
 app.use('/user', userRouter);
 app.use(session({
@@ -55,20 +75,6 @@ app.use(session({
 }));
 
 
-// 相当于拦截器，可用于全局检测token
-app.all("*", (req, res, next) => {
-    // res.header("Access-Control-Allow-Origin", "*"); //设置允许客户端跨域请求
-    res.header("Content-Type", "application/json;charset=UTF-8"); //设置响应头数据类型
-    // console.log(req.method)
-    if (req.method === 'POST') {
-        // console.log('先进我这')
-        if(!req.headers.token){
-            res.json({code: 606, message: '大哥你token呢？11111', data: ''})
-        }
-    } else {
-        next()
-    }
-})
 
 // // 普通get
 app.post('/login', (req, res, next) => {
