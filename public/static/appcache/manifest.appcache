@@ -1,8 +1,8 @@
 CACHE MANIFEST
-/static/images/demo1.jpg
+# /static/images/demo1.jpg
 
 NETWORK:
 *
 
 FALLBACK:
-/static/images /static/images/demo1.jpg
+# /static/images /static/images/demo1.jpg

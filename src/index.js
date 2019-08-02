@@ -59,13 +59,12 @@ app.use(session({
 app.all("*", (req, res, next) => {
     // res.header("Access-Control-Allow-Origin", "*"); //设置允许客户端跨域请求
     res.header("Content-Type", "application/json;charset=UTF-8"); //设置响应头数据类型
+    // console.log(req.method)
     if (req.method === 'POST') {
         // console.log('先进我这')
-        // checkToken(req, res, next, o => {
-        //     // next()
-        //     res.json(getJson('大哥你token呢？', 666))
-        // })
-        next()
+        if(!req.headers.token){
+            res.json({code: 606, message: '大哥你token呢？11111', data: ''})
+        }
     } else {
         next()
     }
