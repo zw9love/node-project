@@ -185,8 +185,66 @@
     "groupTitle": "demo"
   },
   {
+    "type": "get",
+    "url": "/user/pagination",
+    "title": "测试分页",
+    "description": "<p>测试分页</p>",
+    "name": "_pagination",
+    "group": "user",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "pageNumber",
+            "defaultValue": "1",
+            "description": "<p>第几页</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "pageSize",
+            "defaultValue": "10",
+            "description": "<p>每页多少条数据</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "json",
+            "optional": false,
+            "field": "data",
+            "description": "<p>返回值</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n    \"code\": 200,\n    \"message\": \"hello world\",\n    \"data\": {}\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "sampleRequest": [
+      {
+        "url": "http://localhost:8080/user/pagination"
+      }
+    ],
+    "version": "1.0.0",
+    "filename": "src/routes/user.js",
+    "groupTitle": "user"
+  },
+  {
     "type": "post",
-    "url": "/transaction",
+    "url": "/user/transaction",
     "title": "测试事务",
     "description": "<p>测试事务</p>",
     "name": "_transaction",
@@ -199,7 +257,7 @@
             "type": "number",
             "optional": false,
             "field": "money",
-            "defaultValue": "1",
+            "defaultValue": "0",
             "description": "<p>转钱数值</p>"
           }
         ]
@@ -246,18 +304,9 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "number",
-            "optional": false,
-            "field": "id",
-            "defaultValue": "1",
-            "description": "<p>id</p>"
-          },
-          {
-            "group": "Parameter",
             "type": "string",
             "optional": false,
             "field": "name",
-            "defaultValue": "xxx",
             "description": "<p>用户名</p>"
           },
           {
@@ -265,7 +314,15 @@
             "type": "string",
             "optional": false,
             "field": "age",
-            "defaultValue": "123",
+            "defaultValue": "0",
+            "description": "<p>年龄</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "money",
+            "defaultValue": "0",
             "description": "<p>年龄</p>"
           }
         ]
@@ -315,7 +372,6 @@
             "type": "string",
             "optional": false,
             "field": "name",
-            "defaultValue": "xxx",
             "description": "<p>用户名</p>"
           },
           {
@@ -323,7 +379,6 @@
             "type": "string",
             "optional": false,
             "field": "passwd",
-            "defaultValue": "123",
             "description": "<p>密码</p>"
           }
         ]
