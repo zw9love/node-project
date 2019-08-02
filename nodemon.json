@@ -12,7 +12,8 @@
   "watch": [
     "src/index.js",
     "src/**/",
-    "public/static/**",
+    "public/static/css",
+    "public/static/appcache",
     "public/view/**",
     "public/swagger/**"
   ],
