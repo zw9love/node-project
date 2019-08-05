@@ -7,6 +7,8 @@ const databaseData = JSON.parse(data.toString())
 // let connection = mysql.createConnection(databaseData);
 let {execTrans, _getNewSqlParamEntity, execQuery, execPaginationQuery} = require('../utils/dbHelper')
 let {getJson} = require('../utils/index')
+
+
 /**
  * @api {get} /user/getList 获取用户列表
  * @apiDescription 获取用户列表
