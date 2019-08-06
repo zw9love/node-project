@@ -12,6 +12,28 @@ let router = express.Router();
 */
 
 /**
+ * @api {get} /demo 测试
+ * @apiDescription 测试
+ * @apiName demo
+ * @apiGroup demo
+ * @apiParam {string} name=xxx 用户名
+ * @apiParam {string} passwd=123 密码
+ * @apiSuccess {json} data 返回值
+ * @apiSuccessExample {json} Success-Response:
+ {
+     "code": 200,
+     "message": "hello world",
+     "data": {}
+ }
+ * @apiSampleRequest http://localhost:8080/demo
+ * @apiVersion 1.0.0
+ */
+// 普通get
+router.get('/demo', function (req, res) {
+    res.json({code: 200, message: 'hello world', data: req.body});
+})
+
+/**
  * @api {post} /demo 测试
  * @apiDescription 测试
  * @apiName demo

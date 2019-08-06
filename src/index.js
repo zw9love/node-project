@@ -3,7 +3,9 @@
  @time 2019/7/27
  **/
 let {sendMail, getRandomString, aesEncrypt, aesDecrypt} = require('./utils/index.js')
+let {getData, postData} = require('./utils/http.js')
 const md5 = require('blueimp-md5')
+const http = require('http')
 const child_process = require('child_process');
 const express = require('express');
 const app = express();
@@ -233,7 +235,25 @@ app.get('/aesDecrypt', (request, response, next) => {
     response.json({code: 200, message:"成功", data: aesDecrypt(aesEncrypt('123'))})
 })
 
+// http的get请求
+app.get('/getHttpData', function(req, res) {
+    // http模块获取其他服务器数据
+    getData('/user/pagination', req.query).then(data => {
+        res.json({code: 200, message:"成功", data: data})
+    }).catch(e => {
+        res.json({code: 400, message:"失败", data: e.toString()})
+    })
+});
 
+// http的post请求
+app.post('/postHttpData', function(req, res) {
+    // http模块获取其他服务器数据
+    postData('/user/add', req.body).then(data => {
+        res.json({code: 200, message:"成功", data: data})
+    }).catch(e => {
+        res.json({code: 400, message:"失败", data: e.toString()})
+    })
+});
 
 // 重定向页面
 app.get('*', (request, response, next) => {

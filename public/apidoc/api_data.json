@@ -127,6 +127,64 @@
     "groupTitle": "demo"
   },
   {
+    "type": "get",
+    "url": "/demo",
+    "title": "测试",
+    "description": "<p>测试</p>",
+    "name": "demo",
+    "group": "demo",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "name",
+            "defaultValue": "xxx",
+            "description": "<p>用户名</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "passwd",
+            "defaultValue": "123",
+            "description": "<p>密码</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "json",
+            "optional": false,
+            "field": "data",
+            "description": "<p>返回值</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n    \"code\": 200,\n    \"message\": \"hello world\",\n    \"data\": {}\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "sampleRequest": [
+      {
+        "url": "http://localhost:8080/demo"
+      }
+    ],
+    "version": "1.0.0",
+    "filename": "src/routes/demo.js",
+    "groupTitle": "demo"
+  },
+  {
     "type": "post",
     "url": "/demo",
     "title": "测试",
