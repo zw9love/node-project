@@ -1,6 +1,7 @@
 const uuidv1 = require('uuid/v1');
 const crypto = require('crypto');  //加载加密文件
-let nodemailer = require('nodemailer')
+const nodemailer = require('nodemailer')
+const key = 'zengwei'
 
 function getJson(code, message, data) {
     return {

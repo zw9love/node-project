@@ -2,7 +2,8 @@
  @author zengwei
  @time 2019/7/27
  **/
-let {sendMail} = require('./utils/index.js')
+let {sendMail, getRandomString, aesEncrypt, aesDecrypt} = require('./utils/index.js')
+const md5 = require('blueimp-md5')
 const child_process = require('child_process');
 const express = require('express');
 const app = express();
@@ -211,6 +212,27 @@ app.get('/sendMail', (request, response, next) => {
     })
     response.json({code: 200, message:"发送成功", data: ''})
 })
+
+// 随机字符串
+app.get('/getRandomString', (request, response, next) => {
+    response.json({code: 200, message:"成功", data: getRandomString()})
+})
+
+// md5
+app.get('/getMd5', (request, response, next) => {
+    response.json({code: 200, message:"成功", data: md5('123456', 'weiwei')})
+})
+
+// 加密
+app.get('/aesEncrypt', (request, response, next) => {
+    response.json({code: 200, message:"成功", data: aesEncrypt('123')})
+})
+
+// 解密
+app.get('/aesDecrypt', (request, response, next) => {
+    response.json({code: 200, message:"成功", data: aesDecrypt(aesEncrypt('123'))})
+})
+
 
 
 // 重定向页面
