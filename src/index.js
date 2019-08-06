@@ -4,12 +4,27 @@
  **/
 let {sendMail, getRandomString, aesEncrypt, aesDecrypt} = require('./utils/index.js')
 let {getData, postData} = require('./utils/http.js')
+const redis = require("redis");
+const client = redis.createClient();
+// client.on("error", function (err) {
+//     console.log("Error " + err);
+// });
+//
+// client.set("string key", "string val", redis.print);
+// client.hset("hash key", "hashtest 1", "some value", redis.print);
+// client.hset(["hash key", "hashtest 2", "some other value"], redis.print);
+// client.hkeys("hash key", function (err, replies) {
+//     console.log(replies.length + " replies:");
+//     replies.forEach(function (reply, i) {
+//         console.log("    " + i + ": " + reply);
+//     });
+//     client.quit();
+// });
+
 const md5 = require('blueimp-md5')
-const http = require('http')
 const child_process = require('child_process');
 const express = require('express');
 const app = express();
-const router = express.Router();
 const session = require('express-session')
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -268,9 +283,6 @@ app.post('*', (request, response, next) => {
     response.json({code: 404, message:"Can not find it", data: ''})
     next()
 })
-
-
-
 
 
 child_process.exec('apidoc -i src/ -o public/apidoc/', function (error, stdout, stderr) {});
