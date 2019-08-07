@@ -211,21 +211,22 @@ app.post('/upload', uploadInfo.single('file'), function (request, response, next
 // 发邮件
 app.get('/sendMail', (request, response, next) => {
     sendMail({
-        recipient:'18514075699@163.com,823334587@qq.com',
-        title:'圣诞大礼哦，点进来看看啊111',
-        text:'圣诞快乐，有附件。111',
-        name: '你大爷'
-        // html:'<h1>Hi, weiwei,这是一封测试邮件111222333</h1>'
-        // files:[
-        //     {
-        //         filename:'config.json',
-        //         path:'./src/dao/config.json' // 当前路径是项目根路径
-        //     },
-        //     {
-        //         filename:'index.ts',
-        //         path:'./src/dao/index.ts'
-        //     }
-        // ]
+        // recipient:'18514075699@163.com,823334587@qq.com',
+        recipient:'18514075699@163.com',
+        title:'情人节情人节',
+        text:'情人节情人节快乐，有附件。',
+        name: '你大爷',
+        html:'<h1>Hi, weiwei,这是一封测试邮件111222333</h1>',
+        files:[
+            {
+                filename:'config.json',
+                path:'./package.json' // 当前路径是项目根路径
+            },
+            {
+                filename:'index.ts',
+                path:'./src/index.js'
+            }
+        ]
     })
     response.json({code: 200, message:"发送成功", data: ''})
 })

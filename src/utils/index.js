@@ -83,7 +83,6 @@ function sendMail({ recipient, title, html, text, files, name }){
         html: html,
         attachments: files
     }
-    console.log(111)
     transport.sendMail(mailOption, (error, response) => {
             if (error) {
                 console.log('失败')
