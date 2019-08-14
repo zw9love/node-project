@@ -121,6 +121,7 @@ router.post('/transaction', (request, response, next) => {
  * @apiVersion 1.0.0
  */
 router.get('/pagination', function (req, res, next) {
+    console.log('req.query', req.query)
     let select = 'SELECT * FROM user'
     execPaginationQuery(req, res, 'user', select)
 });
