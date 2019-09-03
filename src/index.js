@@ -4,8 +4,8 @@
  **/
 let {sendMail, getRandomString, aesEncrypt, aesDecrypt} = require('./utils/index.js')
 let {getData, postData} = require('./utils/http.js')
-const redis = require("redis");
-const client = redis.createClient();
+// const redis = require("redis");
+// const client = redis.createClient();
 // client.on("error", function (err) {
 //     console.log("Error " + err);
 // });
