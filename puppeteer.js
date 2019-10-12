@@ -2,7 +2,8 @@
  @author zengwei
  @time 2019/10/11
  **/
-
+let {execTrans, _getNewSqlParamEntity, execQuery, execPaginationQuery} = require('./src/utils/dbHelper')
+let {getRandomString} = require('./src/utils/index')
 const puppeteer = require('puppeteer');
 
 const getFile = async () => {
@@ -88,7 +89,6 @@ const getVideoSrc = async () => {
         })
         const baseNode = '.row'
         const movieList = await page.evaluate((sel) => {
-            console.log('sel', sel)
             var stream = Array.from($(sel).find('iframe#Player').attr('src'))
             stream && (stream = stream.join(''))
             return stream
@@ -100,97 +100,56 @@ const getVideoSrc = async () => {
     browser.close()
 }
 
-
 let scrapeHupuBBS = async () => {
     const browser = await puppeteer.launch({headless: false});
+    // const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.goto('https://bbs.hupu.com/all-gambia');
-    // await page.click('.expanded #container .list');
-    // await page.waitFor(1000);
-    const result = await page.evaluate(() => {
-        let arr = []
-        $('.expanded #container .list ul li').each(function(){
-            let title = $(this).find('.textSpan a span.red').text();
-            arr.push({
-                title
-            })
-        })
-        return arr
-    });
-    browser.close();
-    return result;
-};
-
-// scrapeHupuBBS().then((value) => {
-//     console.log(value); // Success!
-// });
-
-// let scrapeHupuBBSAndContent = async () => {
-//     const browser = await puppeteer.launch({headless: false});
-//     const page = await browser.newPage();
-//     await page.goto('https://bbs.hupu.com/all-gambia');
-//     // await page.click('.expanded #container .list ul li:first-child .textSpan a span.red');
-//     // await page.waitFor(1000);
-//
-//     const [response] = await Promise.all([
-//         page.waitForNavigation(), // The promise resolves after navigation has finished
-//         page.click('.expanded #container .list ul li:first-child .textSpan a span.red'), // 点击该链接将间接导致导航(跳转)
-//     ]);
-//
-//     page.close()
-//
-//     const result = await response.evaluate(() => {
-//         // let arr = []
-//         // $('.expanded #container .list ul li').each(function(){
-//         //     let title = $(this).find('.textSpan a span.red').text();
-//         //     arr.push({
-//         //         title
-//         //     })
-//         // })
-//         // return arr
-//         let content = $('.quote-content').html()
-//         return {
-//             content: content || ''
-//         }
-//     });
-//     browser.close();
-//     return result;
-// };
-
-
-let scrapeHupuBBSAndContent = async () => {
-    const browser = await puppeteer.launch({headless: false});
-    const page = await browser.newPage();
-    await page.goto('https://bbs.hupu.com/all-gambia');
-    await page.waitForSelector('.expanded #container .list ul li:first-child .textSpan a span.red'); // 等待并获取点击跳转的goto元素
-    const link = await page.$('.expanded #container .list ul li:first-child .textSpan a span.red');
-    const newPagePromise = new Promise(x => browser.once('targetcreated', target => x(target.page()))); // 声明变量
-    await link.click(); // 点击跳转
-    const newPage = await newPagePromise; // newPage就是a链接打开窗口的Page对象
-
-    // await page.click('.expanded #container .list ul li:first-child .textSpan a span.red');
-    // await page.waitFor(1000);
-
-    const result = await newPage.evaluate(() => {
-        // let arr = []
-        // $('.expanded #container .list ul li').each(function(){
-        //     let title = $(this).find('.textSpan a span.red').text();
-        //     arr.push({
-        //         title
-        //     })
-        // })
-        // return arr
-        // let content = $('.quote-content').html()
-        let content = document.querySelectorAll('.quote-content').innerText
+    const lenResult = await page.evaluate(() => {
         return {
-            content: content || ''
+            listLength: $('.expanded #container .bbsHotPit .list').length,
+            listCellLength: $('.expanded #container .bbsHotPit .list').eq(0).find('ul li').length
         }
     });
+    let arr = []
+    for(let i = 1; i <= lenResult.listLength; i++){
+        for(let j = 1; j <= lenResult.listCellLength; j++) {
+            const link = await page.$(`.expanded #container .bbsHotPit .list:nth-child(${i+1}) ul li:nth-child(${j}) .textSpan a`)
+            if (link) {
+                await link.click()
+                await page.waitFor(1000);
+                let pages = await browser.pages()
+                const res = await pages[2].evaluate(() => {
+                    let content = $('.quote-content').html()
+                    let title = $('#j_data').text()
+                    let author = $('#tpc .author .u').text()
+                    let time = $('#tpc .author .stime').text()
+                    return {
+                        title,
+                        author,
+                        content,
+                        time
+                    }
+                });
+                let sql = 'INSERT INTO hupu_bbs_hot(id,title, content, time, author) VALUES(?,?,?,?,?)';
+                let sqlParams = [getRandomString(), res.title, res.content, res.time, res.author]
+                // console.log('res', res)
+                execQuery(sql, sqlParams).then((result) => {
+                    console.log('爬虫一条数据成功！')
+                }).catch((error) => {
+                    console.error('爬虫一条数据失败！', error)
+                })
+                arr.push(res)
+                await pages[2].close()
+            }
+        }
+    }
+
     browser.close();
-    return result;
+    return arr;
 };
 
-
-scrapeHupuBBSAndContent().then((value) => {
-    console.log(value); // Success!
+scrapeHupuBBS().then((value) => {
+    // console.log(value); // Success!
+    console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
 });
