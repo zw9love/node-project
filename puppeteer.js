@@ -149,7 +149,24 @@ let scrapeHupuBBS = async () => {
     return arr;
 };
 
-scrapeHupuBBS().then((value) => {
-    // console.log(value); // Success!
-    console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
+// scrapeHupuBBS().then((value) => {
+//     // console.log(value); // Success!
+//     console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
+// });
+
+let scrapeHKMinisite = async () => {
+    const browser = await puppeteer.launch({headless: false});
+    // const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto('https://viphk.moco.com/login');
+    await page.type('.main .phone-wrapper:nth-child(3) .phone-input input', '18514075699', {delay: 100}); // 输入变慢，像一个用户
+    await page.type('.main .phone-wrapper:nth-child(4) .phone-input input', '111111', {delay: 100}); // 输入变慢，像一个用户
+    await page.click('.code-btn')
+    page.on('response', response => {
+        console.log(response)
+    })
+    // browser.close();
+};
+
+scrapeHKMinisite().then((value) => {
 });
