@@ -5,6 +5,7 @@
 let {execTrans, _getNewSqlParamEntity, execQuery, execPaginationQuery} = require('./src/utils/dbHelper')
 let {getRandomString} = require('./src/utils/index')
 const puppeteer = require('puppeteer');
+const devices = require('puppeteer/DeviceDescriptors');
 
 const getFile = async () => {
     const browser = await puppeteer.launch({headless: false});
@@ -158,12 +159,26 @@ let scrapeHKMinisite = async () => {
     const browser = await puppeteer.launch({headless: false});
     // const browser = await puppeteer.launch();
     const page = await browser.newPage();
+    // await page.goto('https://viphk.moco.com/mine');
+    await page.emulate(devices['iPhone 6']);
     await page.goto('https://viphk.moco.com/login');
+    await page.waitFor(10000);
     await page.type('.main .phone-wrapper:nth-child(3) .phone-input input', '18514075699', {delay: 100}); // 输入变慢，像一个用户
-    await page.type('.main .phone-wrapper:nth-child(4) .phone-input input', '111111', {delay: 100}); // 输入变慢，像一个用户
+    // await page.type('.main .phone-wrapper:nth-child(4) .phone-input input', '111111', {delay: 100}); // 输入变慢，像一个用户
     await page.click('.code-btn')
+    await page.waitFor(10000);
+    await page.click('.agree')
+    await page.click('.commit')
+    // 监听ajax数据
     page.on('response', response => {
-        console.log(response)
+        // console.log('response.url', response.url())
+        let req = response.request()
+        if(req.resourceType().toLowerCase() === 'xhr'){
+            response.json().then((res) => {
+                console.log('res.code = ', res.code)
+                console.log('res = ', res)
+            })
+        }
     })
     // browser.close();
 };
