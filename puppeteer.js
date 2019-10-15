@@ -102,8 +102,8 @@ const getVideoSrc = async () => {
 }
 
 let scrapeHupuBBS = async () => {
-    const browser = await puppeteer.launch({headless: false});
-    // const browser = await puppeteer.launch();
+    // const browser = await puppeteer.launch({headless: false});
+    const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.goto('https://bbs.hupu.com/all-gambia');
     const lenResult = await page.evaluate(() => {
@@ -183,5 +183,5 @@ let scrapeHKMinisite = async () => {
     // browser.close();
 };
 
-scrapeHKMinisite().then((value) => {
-});
+// scrapeHKMinisite().then((value) => {
+// });
