@@ -3,7 +3,7 @@
  @time 2019/10/11
  **/
 let {execTrans, _getNewSqlParamEntity, execQuery, execPaginationQuery} = require('./src/utils/dbHelper')
-let {getRandomString} = require('./src/utils/index')
+let {getRandomString, getTime} = require('./src/utils/index')
 const puppeteer = require('puppeteer');
 const devices = require('puppeteer/DeviceDescriptors');
 
@@ -101,6 +101,7 @@ const getVideoSrc = async () => {
     browser.close()
 }
 
+let num = 0
 let scrapeHupuBBS = async () => {
     // const browser = await puppeteer.launch({headless: false});
     const browser = await puppeteer.launch();
@@ -118,7 +119,7 @@ let scrapeHupuBBS = async () => {
             const link = await page.$(`.expanded #container .bbsHotPit .list:nth-child(${i+1}) ul li:nth-child(${j}) .textSpan a`)
             if (link) {
                 await link.click()
-                await page.waitFor(1000);
+                await page.waitFor(5000);
                 let pages = await browser.pages()
                 const res = await pages[2].evaluate(() => {
                     let content = $('.quote-content').html()
@@ -132,11 +133,11 @@ let scrapeHupuBBS = async () => {
                         time
                     }
                 });
-                let sql = 'INSERT INTO hupu_bbs_hot(id,title, content, time, author) VALUES(?,?,?,?,?)';
-                let sqlParams = [getRandomString(), res.title, res.content, res.time, res.author]
+                let sql = 'INSERT INTO bbs_hot(id,title, content, article_time, author, create_time) VALUES(?,?,?,?,?,?)';
+                let sqlParams = [getRandomString(), res.title, res.content, res.time, res.author, getTime()]
                 // console.log('res', res)
                 execQuery(sql, sqlParams).then((result) => {
-                    console.log('爬虫一条数据成功！')
+                    console.log(`爬虫一条数据成功！ ${++num}`)
                 }).catch((error) => {
                     console.error('爬虫一条数据失败！', error)
                 })
@@ -150,10 +151,11 @@ let scrapeHupuBBS = async () => {
     return arr;
 };
 
-// scrapeHupuBBS().then((value) => {
-//     // console.log(value); // Success!
-//     console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
-// });
+scrapeHupuBBS().then((value) => {
+    // console.log(value); // Success!
+    // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
+    console.log('爬取了虎扑bbs热搜条数 = ', num); // Success!
+});
 
 let scrapeHKMinisite = async () => {
     const browser = await puppeteer.launch({headless: false});
