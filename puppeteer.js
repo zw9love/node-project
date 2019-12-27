@@ -214,7 +214,7 @@ let scrapeHupuBBSEnt = async () => {
   // page.setViewport({width: 1200, height: 600})
   // await page.goto('https://passport.hupu.com/pc/login?project=bbs&display=&from=http%3A%2F%2Fwww.hupu.com&jumpurl=http://www.hupu.com');
   // await page.waitFor(15000);
-  await page.goto(url);
+  await page.goto(url, {timeout: 0});
   // const link = await page.$(`.showpage .page .nextPage`)
 
   // 登陆下获取cookie
@@ -296,11 +296,13 @@ let scrapeHupuBBSEnt = async () => {
       secure: false,
       session: false } ]
   cookie.forEach(async o => {
-    await page.setCookie(o)
+    await page.setCookie(o) // 即使设置了cookie，爬取较多的时候还是会被对方服务器清除。
   })
-  // await page.waitFor(3600000);
+  let count = 5
+  console.log(`${count}秒后开始爬取数据...`)
+  await page.waitFor(count * 1000);
   let arr = []
-  for (let i = 1; i <= 20; i++) {
+  for (let i = 11; i <= 15; i++) {
     console.log('当前爬取的页面是：' + url + '-' + i)
     await page.goto(url + '-' + i, {timeout: 0});
     let lenResult = await page.evaluate(() => {
