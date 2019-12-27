@@ -116,6 +116,7 @@ let scrapeHupuBBS = async () => {
       listCellLength: $('.expanded #container .bbsHotPit .list').eq(0).find('ul li').length
     }
   });
+  console.log('虎扑bbs热搜条数 = ', lenResult.listLength * lenResult.listCellLength)
   let arr = []
   for (let i = 1; i <= lenResult.listLength; i++) {
     for (let j = 1; j <= lenResult.listCellLength; j++) {
@@ -163,31 +164,40 @@ let scrapeHupuBBS = async () => {
         // })
 
         let path = newPage.url()
-        const res = await newPage.evaluate(() => {
-          // let path = $(window)[0].location.href
-          let content = $('.quote-content').html()
-          let title = $('#j_data').text()
-          let author = $('#tpc .author .u').text()
-          let time = $('#tpc .author .stime').text()
-          return {
-            title,
-            author,
-            content,
-            time,
-            // path
-          }
-        });
-        let sql = 'INSERT INTO bbs_hot(id,title, content, article_time, author, create_time, path) VALUES(?,?,?,?,?,?,?)';
-        let sqlParams = [getRandomString(), res.title, res.content, res.time, res.author, getTime(), path]
-        // console.log('res', res)
-        execQuery(sql, sqlParams).then((result) => {
-          console.log(`爬虫一条数据成功！ ${++num}  href = ${href}`)
-        }).catch((error) => {
-          console.error('爬虫一条数据失败！', error)
-        })
-        arr.push(res)
-        await newPage.close()
-
+        // let searchSql = 'select * from bbs_hot where path = ?';
+        // let searchSqlParams = [path]
+        // execQuery(searchSql, searchSqlParams).then(async (result) => {
+        //   if (result.length) return
+          const res = await newPage.evaluate(() => {
+            // let path = $(window)[0].location.href
+            let content = $('.quote-content').html()
+            let title = $('#j_data').text()
+            let author = $('#tpc .author .u').text()
+            let time = $('#tpc .author .stime').text()
+            return {
+              title,
+              author,
+              content,
+              time,
+              // path
+            }
+          });
+          let sql = 'INSERT INTO bbs_hot(id,title, content, article_time, author, create_time, path) VALUES(?,?,?,?,?,?,?)';
+          let sqlParams = [getRandomString(), res.title, res.content, res.time, res.author, getTime(), path]
+          // console.log('res', res)
+          execQuery(sql, sqlParams).then((result) => {
+            console.log(`爬虫一条数据成功！ ${++num}  href = ${href}`)
+          }).catch((error) => {
+            if(error.toString().includes('ER_DUP_ENTRY')){
+              console.error('爬虫一条数据失败，数据重复！')
+            }else{
+              console.error('爬虫一条数据失败！', error)
+            }
+          })
+          arr.push(res)
+          await newPage.close()
+        // }).catch((error) => {
+        // })
       }
     }
   }
@@ -196,11 +206,11 @@ let scrapeHupuBBS = async () => {
   return arr;
 };
 
-// scrapeHupuBBS().then((value) => {
-//   // console.log(value); // Success!
-//   // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
-//   console.log('爬取了虎扑bbs热搜条数 = ', num); // Success!
-// });
+scrapeHupuBBS().then((value) => {
+  // console.log(value); // Success!
+  // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
+  console.log('爬取了虎扑bbs热搜条数 = ', num); // Success!
+});
 
 // 分页爬取
 let scrapeHupuBBSEnt = async () => {
@@ -223,7 +233,8 @@ let scrapeHupuBBSEnt = async () => {
   // console.log('path = ', path)
   // console.log('cookie = ', cookie)
 
-  let cookie = [ { name: 'ua',
+  let cookie = [{
+    name: 'ua',
     value: '68583791',
     domain: '.hupu.com',
     path: '/',
@@ -231,8 +242,10 @@ let scrapeHupuBBSEnt = async () => {
     size: 10,
     httpOnly: false,
     secure: false,
-    session: false },
-    { name: '_cnzz_CV30020080',
+    session: false
+  },
+    {
+      name: '_cnzz_CV30020080',
       value: 'buzi_cookie%7Cb20027f7.0117.2369.6667.bcd51892a8c0%7C-1',
       domain: 'www.hupu.com',
       path: '/',
@@ -240,8 +253,10 @@ let scrapeHupuBBSEnt = async () => {
       size: 71,
       httpOnly: false,
       secure: false,
-      session: true },
-    { name: '_dacevid3',
+      session: true
+    },
+    {
+      name: '_dacevid3',
       value: 'b20027f7.0117.2369.6667.bcd51892a8c0',
       domain: '.hupu.com',
       path: '/',
@@ -249,8 +264,10 @@ let scrapeHupuBBSEnt = async () => {
       size: 45,
       httpOnly: false,
       secure: false,
-      session: false },
-    { name: 'us',
+      session: false
+    },
+    {
+      name: 'us',
       value: '9b5f3c74726766c3b1ccf93c2eb6a173ac1246d0d54dc1b77d7ef39102d841ebc27ddd5a8aca37d3baf3975a8aad0a690a7354df9144d20619fb6e934f825a9c',
       domain: '.hupu.com',
       path: '/',
@@ -258,8 +275,10 @@ let scrapeHupuBBSEnt = async () => {
       size: 130,
       httpOnly: true,
       secure: false,
-      session: false },
-    { name: '__dacevst',
+      session: false
+    },
+    {
+      name: '__dacevst',
       value: 'aea98a43.392ad8f9|1577428991513',
       domain: '.hupu.com',
       path: '/',
@@ -267,8 +286,10 @@ let scrapeHupuBBSEnt = async () => {
       size: 40,
       httpOnly: false,
       secure: false,
-      session: false },
-    { name: 'u',
+      session: false
+    },
+    {
+      name: 'u',
       value: '36254822|55So5oi3MTkxOTg0NDUyOQ==|28b8|82a18fe9d4c8bd9b1815737704673faa|d4c8bd9b18157377|aHVwdV9lNGMxZjM3OGNmYmYxYWZm',
       domain: '.hupu.com',
       path: '/',
@@ -276,8 +297,10 @@ let scrapeHupuBBSEnt = async () => {
       size: 118,
       httpOnly: true,
       secure: false,
-      session: false },
-    { name: '_CLT',
+      session: false
+    },
+    {
+      name: '_CLT',
       value: '868ae16f150cf61ab926af24b4aa60be',
       domain: '.hupu.com',
       path: '/',
@@ -285,8 +308,10 @@ let scrapeHupuBBSEnt = async () => {
       size: 36,
       httpOnly: false,
       secure: false,
-      session: false },
-    { name: '_HUPUSSOID',
+      session: false
+    },
+    {
+      name: '_HUPUSSOID',
       value: 'b8565dbc-9cff-4dc4-acce-53fce83f1216',
       domain: '.hupu.com',
       path: '/',
@@ -294,7 +319,8 @@ let scrapeHupuBBSEnt = async () => {
       size: 46,
       httpOnly: false,
       secure: false,
-      session: false } ]
+      session: false
+    }]
   cookie.forEach(async o => {
     await page.setCookie(o) // 即使设置了cookie，爬取较多的时候还是会被对方服务器清除。
   })
@@ -319,7 +345,7 @@ let scrapeHupuBBSEnt = async () => {
       await page.waitFor(1000);
       let pages = await browser.pages()
       let tmpPath = pages[2]
-      if(!tmpPath) return
+      if (!tmpPath) return
 
       // const href = await page.$eval(`.expanded #container .bbsHotPit .for-list li:nth-child(${i}) .titlelink a.truetit`, el => el.href)
       // let newPage = await browser.newPage()
@@ -364,11 +390,11 @@ let scrapeHupuBBSEnt = async () => {
   return arr;
 };
 
-scrapeHupuBBSEnt().then((value) => {
-  // console.log(value); // Success!
-  // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
-  console.log('总共成功爬取了虎扑bbs影视区条数 = ', num); // Success!
-});
+// scrapeHupuBBSEnt().then((value) => {
+//   // console.log(value); // Success!
+//   // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
+//   console.log('总共成功爬取了虎扑bbs影视区条数 = ', num); // Success!
+// });
 
 
 let scrapeHKMinisite = async () => {
