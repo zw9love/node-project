@@ -399,20 +399,16 @@ let scrapeHupuBBSArticle = async () => {
         let path = tmpPath.url()
         const res = await tmpPath.evaluate(() => {
           // let path = $(window)[0].location.href
-          try {
-            let content = $('.quote-content').html()
-            let title = $('#j_data').text()
-            let author = $('#tpc .author .u').text()
-            let time = $('#tpc .author .stime').text()
-            return {
-              title,
-              author,
-              content,
-              time,
-              // path
-            }
-          } catch (e) {
-            logger.error(`\x1B[31m${e}\x1B[0m`)
+          let content = $('.quote-content').html()
+          let title = $('#j_data').text()
+          let author = $('#tpc .author .u').text()
+          let time = $('#tpc .author .stime').text()
+          return {
+            title,
+            author,
+            content,
+            time,
+            // path
           }
         });
         let sql = 'INSERT INTO bbs_shh(id,title, content, article_time, author, create_time, path) VALUES(?,?,?,?,?,?,?)';
