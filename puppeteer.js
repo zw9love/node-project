@@ -247,20 +247,21 @@ let scrapeHupuBBS = async () => {
   return arr;
 };
 
-scrapeHupuBBS().then((value) => {
-  // console.log(value); // Success!
-  // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
-  console.log(`\x1B[32m爬取了虎扑bbs热搜条数 = ${num}\x1B[0m`); // Success!
-});
+// scrapeHupuBBS().then((value) => {
+//   // console.log(value); // Success!
+//   // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
+//   console.log(`\x1B[32m爬取了虎扑bbs热搜条数 = ${num}\x1B[0m`); // Success!
+// });
 
 // 分页爬取
-let scrapeHupuBBSEnt = async () => {
+let scrapeHupuBBSArticle = async () => {
   // const browser = await puppeteer.launch({headless: false, defaultViewport: null,});
   const browser = await puppeteer.launch();
   browser.on('disconnected', () => {
     browser.disconnect()
   })
-  const url = 'https://bbs.hupu.com/ent'
+  // const url = 'https://bbs.hupu.com/ent'
+  const url = 'https://bbs.hupu.com/vote'
   const page = await browser.newPage();
   // page.setViewport({width: 1200, height: 600})
   // await page.goto('https://passport.hupu.com/pc/login?project=bbs&display=&from=http%3A%2F%2Fwww.hupu.com&jumpurl=http://www.hupu.com');
@@ -394,41 +395,52 @@ let scrapeHupuBBSEnt = async () => {
       // const href = await page.$eval(`.expanded #container .bbsHotPit .for-list li:nth-child(${i}) .titlelink a.truetit`, el => el.href)
       // let newPage = await browser.newPage()
       // await newPage.goto(href, {timeout: 0})
-      let path = tmpPath.url()
-      const res = await tmpPath.evaluate(() => {
-        // let path = $(window)[0].location.href
-        let content = $('.quote-content').html()
-        let title = $('#j_data').text()
-        let author = $('#tpc .author .u').text()
-        let time = $('#tpc .author .stime').text()
-        return {
-          title,
-          author,
-          content,
-          time,
-          // path
-        }
-      });
-      let sql = 'INSERT INTO bbs_hot_ent(id,title, content, article_time, author, create_time, path) VALUES(?,?,?,?,?,?,?)';
-      let sqlParams = [getRandomString(), res.title, res.content, res.time, res.author, getTime(), path]
-      // console.log('res', res)
-      execQuery(sql, sqlParams).then((result) => {
-        ++num
-        // console.log(`\x1B[32m爬虫一条数据成功！ ${++loopIndex}  href = ${path}\x1B[0m`)
-        logger.info(`\x1B[32m爬虫一条数据成功！ ${++loopIndex}  href = ${path}\x1B[0m`);
-      }).catch((error) => {
-        if(error.toString().includes('ER_DUP_ENTRY')){
-          // console.error('爬虫一条数据失败，数据重复！')
-          logger.error(`\x1B[31m爬虫一条数据失败，数据重复！失败页面是: ${path}\x1B[0m`);
-        }else{
-          // console.error('爬虫一条数据失败！', error)
-          logger.error(`\x1B[31m爬虫一条数据失败！${error}, 失败页面是: ${path}\x1B[0m`);
-        }
-        // console.error('失败页面是：', path)
-        // logger.error('\x1B[31m失败页面是：' + path + '\x1B[0m');
-      })
-      arr.push(res)
-      await tmpPath.close()
+      try {
+        let path = tmpPath.url()
+        const res = await tmpPath.evaluate(() => {
+          // let path = $(window)[0].location.href
+          try {
+            let content = $('.quote-content').html()
+            let title = $('#j_data').text()
+            let author = $('#tpc .author .u').text()
+            let time = $('#tpc .author .stime').text()
+            return {
+              title,
+              author,
+              content,
+              time,
+              // path
+            }
+          } catch (e) {
+            logger.error(`\x1B[31m${e}\x1B[0m`)
+          }
+        });
+        let sql = 'INSERT INTO bbs_shh(id,title, content, article_time, author, create_time, path) VALUES(?,?,?,?,?,?,?)';
+        let sqlParams = [getRandomString(), res.title, res.content, res.time, res.author, getTime(), path]
+        // console.log('res', res)
+        execQuery(sql, sqlParams).then((result) => {
+          ++num
+          // console.log(`\x1B[32m爬虫一条数据成功！ ${++loopIndex}  href = ${path}\x1B[0m`)
+          logger.info(`\x1B[32m爬虫一条数据成功！ ${++loopIndex}  href = ${path}\x1B[0m`);
+        }).catch((error) => {
+          if(error.toString().includes('ER_DUP_ENTRY')){
+            // console.error('爬虫一条数据失败，数据重复！')
+            logger.error(`\x1B[31m爬虫一条数据失败，数据重复！失败页面是: ${path}\x1B[0m`);
+          }else{
+            // console.error('爬虫一条数据失败！', error)
+            logger.error(`\x1B[31m爬虫一条数据失败！${error}, 失败页面是: ${path}\x1B[0m`);
+          }
+          // console.error('失败页面是：', path)
+          // logger.error('\x1B[31m失败页面是：' + path + '\x1B[0m');
+        })
+        arr.push(res)
+        await tmpPath.close()
+      }catch(e){
+        logger.error(`\x1B[31m${e}\x1B[0m`)
+      }
+
+      // let sql = 'INSERT INTO bbs_hot_ent(id,title, content, article_time, author, create_time, path) VALUES(?,?,?,?,?,?,?)';
+
 
     }
   }
@@ -442,11 +454,11 @@ let scrapeHupuBBSEnt = async () => {
   return arr;
 };
 
-// scrapeHupuBBSEnt().then((value) => {
-//   // console.log(value); // Success!
-//   // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
-//   console.log(`\x1B[32m总共成功爬取了虎扑bbs影视区条数 = ${num}\x1B[0m`); // Success!
-// });
+scrapeHupuBBSArticle().then((value) => {
+  // console.log(value); // Success!
+  // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
+  console.log(`\x1B[32m总共成功爬取了虎扑bbs条数 = ${num}\x1B[0m`); // Success!
+});
 
 
 let scrapeHKMinisite = async () => {
