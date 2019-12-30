@@ -6,6 +6,22 @@ let {execTrans, _getNewSqlParamEntity, execQuery, execPaginationQuery} = require
 let {getRandomString, getTime} = require('./src/utils/index')
 const puppeteer = require('puppeteer');
 const devices = require('puppeteer/DeviceDescriptors');
+const schedule = require('node-schedule');
+
+const  scheduleCronstyle = ()=>{
+  //每分钟的第30秒定时执行一次:
+  const job = schedule.scheduleJob('* * * * * *',()=>{
+    console.log('scheduleCronstyle:' + new Date());
+  });
+
+  setTimeout(function() {
+    console.log('定时器取消')
+    // 定时器取消
+    job.cancel();
+  }, 5000);
+}
+
+// scheduleCronstyle();
 
 const getFile = async () => {
   const browser = await puppeteer.launch({headless: false});
@@ -206,11 +222,11 @@ let scrapeHupuBBS = async () => {
   return arr;
 };
 
-scrapeHupuBBS().then((value) => {
-  // console.log(value); // Success!
-  // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
-  console.log('爬取了虎扑bbs热搜条数 = ', num); // Success!
-});
+// scrapeHupuBBS().then((value) => {
+//   // console.log(value); // Success!
+//   // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
+//   console.log('爬取了虎扑bbs热搜条数 = ', num); // Success!
+// });
 
 // 分页爬取
 let scrapeHupuBBSEnt = async () => {
