@@ -3,6 +3,7 @@ node_modules
 /dist
 uploads
 apidoc
+*.log
 
 # local env files
 .env.local

@@ -7,9 +7,30 @@ let {getRandomString, getTime} = require('./src/utils/index')
 const puppeteer = require('puppeteer');
 const devices = require('puppeteer/DeviceDescriptors');
 const schedule = require('node-schedule');
+const logger = require('./logs/logger');
+const logMaster = require('log-master');
+
+// 等于是一个定时切割任务
+// logMaster.split({ //切割，目前唯一的功能
+//   "from": { //源文件夹，可多选。
+//     "app": "./logs"
+//   },
+//   "Suffix": [".log"], //要切割的文件类型，可多选。默认 [".log"]
+//   "to": "./splitLog", //目标文件夹,log都会到这里。
+//   "Interval": 1000 * 60 * 60 * 24, //切割时间间隔，默认一天。
+//   "timeFormat": "yyyy年MM月dd日HH时mm分ss秒", //时间格式(生成的文件夹名),默认为yyyy年MM月dd日HH时mm分ss秒
+//   "startTime": "00:00" //开始时间，默认零点,精确到秒的话就："00:00:00"
+// });
+
+// logger.trace('Entering cheese testing');
+// logger.debug('Got cheese.');
+// logger.info('Cheese is Comté.');
+// logger.warn('Cheese is quite smelly.');
+// logger.error('Cheese is too ripe!');
+// logger.fatal('Cheese was breeding ground for listeria.');
 
 const  scheduleCronstyle = ()=>{
-  //每分钟的第30秒定时执行一次:
+  //每分钟的第30秒定时执行一次: 秒 分 时 日 月 周
   const job = schedule.scheduleJob('* * * * * *',()=>{
     console.log('scheduleCronstyle:' + new Date());
   });
@@ -133,6 +154,7 @@ let scrapeHupuBBS = async () => {
     }
   });
   console.log('虎扑bbs热搜条数 = ', lenResult.listLength * lenResult.listCellLength)
+  logger.info(`\x1B[32m虎扑bbs热搜条数 = ${lenResult.listLength * lenResult.listCellLength}\x1B[0m`);
   let arr = []
   for (let i = 1; i <= lenResult.listLength; i++) {
     for (let j = 1; j <= lenResult.listCellLength; j++) {
@@ -202,12 +224,15 @@ let scrapeHupuBBS = async () => {
           let sqlParams = [getRandomString(), res.title, res.content, res.time, res.author, getTime(), path]
           // console.log('res', res)
           execQuery(sql, sqlParams).then((result) => {
-            console.log(`\x1B[32m爬虫一条数据成功！ ${++num}  href = ${href}\x1B[0m`)
+            logger.info(`\x1B[32m爬虫一条数据成功！ ${++num}  href = ${href}\x1B[0m`);
+            // console.log(`\x1B[32m爬虫一条数据成功！ ${++num}  href = ${href}\x1B[0m`)
           }).catch((error) => {
             if(error.toString().includes('ER_DUP_ENTRY')){
-              console.error('爬虫一条数据失败，数据重复！')
+              // console.error('爬虫一条数据失败，数据重复！')
+              logger.error('\x1B[31m爬虫一条数据失败，数据重复！\x1B[0m');
             }else{
-              console.error('爬虫一条数据失败！', error)
+              // console.error('爬虫一条数据失败！', error)
+              logger.error('\x1B[31m爬虫一条数据失败！' + error + '\x1B[0m');
             }
           })
           arr.push(res)
@@ -222,11 +247,11 @@ let scrapeHupuBBS = async () => {
   return arr;
 };
 
-// scrapeHupuBBS().then((value) => {
-//   // console.log(value); // Success!
-//   // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
-//   console.log('爬取了虎扑bbs热搜条数 = ', num); // Success!
-// });
+scrapeHupuBBS().then((value) => {
+  // console.log(value); // Success!
+  // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
+  console.log(`\x1B[32m爬取了虎扑bbs热搜条数 = ${num}\x1B[0m`); // Success!
+});
 
 // 分页爬取
 let scrapeHupuBBSEnt = async () => {
@@ -339,11 +364,11 @@ let scrapeHupuBBSEnt = async () => {
     }]
 
   let count = 5
-  console.log(`${count}秒后开始爬取数据...`)
+  logger.info(`\x1B[32m${count}秒后开始爬取数据...\x1B[0m`)
   await page.waitFor(count * 1000);
   let arr = []
   for (let i = 1; i <= 15; i++) {
-    console.log('当前爬取的页面是：' + url + '-' + i)
+    logger.info('\x1B[32m当前爬取的页面是：' + url + '-' + i + '\x1B[0m')
     if(i >  10){
       cookie.forEach(async o => {
         await page.setCookie(o) // 即使设置了cookie，爬取较多的时候还是会被对方服务器清除。
@@ -357,7 +382,7 @@ let scrapeHupuBBSEnt = async () => {
     });
     // await page.waitFor(3000);
     let loopIndex = 0
-    console.log(`第${i}页总条数: ${lenResult.listCellLength}`)
+    logger.info(`\x1B[32m第${i}页总条数: ${lenResult.listCellLength}\x1B[0m`)
     for (let j = 1; j <= lenResult.listCellLength; j++) {
       const tmpLink = await page.$(`.expanded #container .bbsHotPit .for-list li:nth-child(${j}) .titlelink a.truetit`)
       await tmpLink.click()
@@ -389,14 +414,18 @@ let scrapeHupuBBSEnt = async () => {
       // console.log('res', res)
       execQuery(sql, sqlParams).then((result) => {
         ++num
-        console.log(`\x1B[32m爬虫一条数据成功！ ${++loopIndex}  href = ${path}\x1B[0m`)
+        // console.log(`\x1B[32m爬虫一条数据成功！ ${++loopIndex}  href = ${path}\x1B[0m`)
+        logger.info(`\x1B[32m爬虫一条数据成功！ ${++loopIndex}  href = ${path}\x1B[0m`);
       }).catch((error) => {
         if(error.toString().includes('ER_DUP_ENTRY')){
-          console.error('爬虫一条数据失败，数据重复！')
+          // console.error('爬虫一条数据失败，数据重复！')
+          logger.error(`\x1B[31m爬虫一条数据失败，数据重复！失败页面是: ${path}\x1B[0m`);
         }else{
-          console.error('爬虫一条数据失败！', error)
+          // console.error('爬虫一条数据失败！', error)
+          logger.error(`\x1B[31m爬虫一条数据失败！${error}, 失败页面是: ${path}\x1B[0m`);
         }
-        console.error('失败页面是：', path)
+        // console.error('失败页面是：', path)
+        // logger.error('\x1B[31m失败页面是：' + path + '\x1B[0m');
       })
       arr.push(res)
       await tmpPath.close()
@@ -416,7 +445,7 @@ let scrapeHupuBBSEnt = async () => {
 // scrapeHupuBBSEnt().then((value) => {
 //   // console.log(value); // Success!
 //   // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
-//   console.success('总共成功爬取了虎扑bbs影视区条数 = ', num); // Success!
+//   console.log(`\x1B[32m总共成功爬取了虎扑bbs影视区条数 = ${num}\x1B[0m`); // Success!
 // });
 
 
