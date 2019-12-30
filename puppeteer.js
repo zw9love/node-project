@@ -186,7 +186,7 @@ let scrapeHupuBBS = async () => {
           let sqlParams = [getRandomString(), res.title, res.content, res.time, res.author, getTime(), path]
           // console.log('res', res)
           execQuery(sql, sqlParams).then((result) => {
-            console.log(`爬虫一条数据成功！ ${++num}  href = ${href}`)
+            console.log(`\x1B[32m爬虫一条数据成功！ ${++num}  href = ${href}\x1B[0m`)
           }).catch((error) => {
             if(error.toString().includes('ER_DUP_ENTRY')){
               console.error('爬虫一条数据失败，数据重复！')
@@ -206,11 +206,11 @@ let scrapeHupuBBS = async () => {
   return arr;
 };
 
-// scrapeHupuBBS().then((value) => {
-//   // console.log(value); // Success!
-//   // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
-//   console.log('爬取了虎扑bbs热搜条数 = ', num); // Success!
-// });
+scrapeHupuBBS().then((value) => {
+  // console.log(value); // Success!
+  // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
+  console.log('爬取了虎扑bbs热搜条数 = ', num); // Success!
+});
 
 // 分页爬取
 let scrapeHupuBBSEnt = async () => {
@@ -373,7 +373,7 @@ let scrapeHupuBBSEnt = async () => {
       // console.log('res', res)
       execQuery(sql, sqlParams).then((result) => {
         ++num
-        console.log(`爬虫一条数据成功！ ${++loopIndex}  href = ${path}`)
+        console.log(`\x1B[32m爬虫一条数据成功！ ${++loopIndex}  href = ${path}\x1B[0m`)
       }).catch((error) => {
         if(error.toString().includes('ER_DUP_ENTRY')){
           console.error('爬虫一条数据失败，数据重复！')
@@ -397,11 +397,11 @@ let scrapeHupuBBSEnt = async () => {
   return arr;
 };
 
-scrapeHupuBBSEnt().then((value) => {
-  // console.log(value); // Success!
-  // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
-  console.log('总共成功爬取了虎扑bbs影视区条数 = ', num); // Success!
-});
+// scrapeHupuBBSEnt().then((value) => {
+//   // console.log(value); // Success!
+//   // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
+//   console.success('总共成功爬取了虎扑bbs影视区条数 = ', num); // Success!
+// });
 
 
 let scrapeHKMinisite = async () => {
