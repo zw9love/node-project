@@ -209,7 +209,7 @@ app.get('/captcha2', (req, res, next) => {
   }
   getRandomNumber(1,5);
   var realpath = `/Users/zengwei/work/node-project/public/static/images/demo${getRandomNumber(1,5)}.jpg`
-  console.log('realpath', realpath)
+  // console.log('realpath', realpath)
 
   //加载需要显示的图片资源
   res.writeHead(200, { 'Content-Type': 'image/jpeg' });
