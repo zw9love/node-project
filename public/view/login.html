@@ -25,6 +25,10 @@
     <h1>login</h1>
     <div>
         <button class="captcha">获取验证码</button>
+        <button class="captcha2">获取验证码2</button>
+        <div class="captcha-wrapper">
+            <img src="" alt="" width="200" height="200" />
+        </div>
     </div>
     <div id="TCaptcha" style="width:300px;height:40px;"></div>
     <form id="upload-form" enctype="multipart/form-data">
@@ -50,9 +54,23 @@
             data: "name=John&location=Boston",
             success: function (msg) {
                 console.log(msg)
-                $('.container').append(msg.img)
+                $('.captcha-wrapper').append(msg.img)
             }
         });
+    })
+
+    $('.captcha2, .captcha-wrapper img').click(function () {
+      console.log(location.protocol + '//' + location.host + '/captcha2')
+      $('.captcha-wrapper img').attr('src', location.protocol + '//' + location.host + '/captcha2')
+      // $.ajax({
+      //   type: "get",
+      //   url: "captcha2",
+      //   data: "name=John&location=Boston",
+      //   success: function (msg) {
+      //     console.log(msg)
+      //     $('.captcha-wrapper img').attr('src', location.protocol + location.hostname + '/captcha2')
+      //   }
+      // });
     })
 
     $('.file-input').change(function () {

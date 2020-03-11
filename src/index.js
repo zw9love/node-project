@@ -4,6 +4,7 @@
  **/
 let {sendMail, getRandomString, aesEncrypt, aesDecrypt} = require('./utils/index.js')
 let {getData, postData} = require('./utils/http.js')
+const fs = require('fs');
 // const redis = require("redis");
 // const client = redis.createClient();
 // client.on("error", function (err) {
@@ -195,6 +196,24 @@ app.post('/captcha', (req, res, next) => {
         msg: captcha.text.toLowerCase()
     }
     res.send(codeData);
+})
+
+
+// 测试验证码
+app.get('/captcha2', (req, res, next) => {
+  //获取资源路径
+
+
+  function getRandomNumber(m,n) {
+    return Math.floor(Math.random()*(n-m+1))+m
+  }
+  getRandomNumber(1,5);
+  var realpath = `/Users/zengwei/work/node-project/public/static/images/demo${getRandomNumber(1,5)}.jpg`
+  console.log('realpath', realpath)
+
+  //加载需要显示的图片资源
+  res.writeHead(200, { 'Content-Type': 'image/jpeg' });
+  res.end(fs.readFileSync(realpath));
 })
 
 // 拿到FormData上传的参数
