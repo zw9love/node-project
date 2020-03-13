@@ -60,17 +60,10 @@
     })
 
     $('.captcha2, .captcha-wrapper img').click(function () {
-      console.log(location.protocol + '//' + location.host + '/captcha2')
-      $('.captcha-wrapper img').attr('src', location.protocol + '//' + location.host + '/captcha2')
-      // $.ajax({
-      //   type: "get",
-      //   url: "captcha2",
-      //   data: "name=John&location=Boston",
-      //   success: function (msg) {
-      //     console.log(msg)
-      //     $('.captcha-wrapper img').attr('src', location.protocol + location.hostname + '/captcha2')
-      //   }
-      // });
+      let {protocol, host} = location
+      let src = `${protocol}//${host}/captcha2?${new Date().getTime()}`
+      $('.captcha-wrapper img').attr('src', src)
+      // console.log(src)
     })
 
     $('.file-input').change(function () {

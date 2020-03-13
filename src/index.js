@@ -202,8 +202,6 @@ app.post('/captcha', (req, res, next) => {
 // 测试验证码
 app.get('/captcha2', (req, res, next) => {
   //获取资源路径
-
-
   function getRandomNumber(m,n) {
     return Math.floor(Math.random()*(n-m+1))+m
   }
