@@ -2,135 +2,314 @@
 <!--<html lang="en" manifest="static/appcache/manifest.appcache">-->
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta content="yes" name="apple-mobile-web-app-capable">
-    <meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
-    <link rel="stylesheet" href="../static/css/common.css">
-    <title>login</title>
-    <style>
-        .container {
-            width: 1000px;
-            margin: 0 auto;
-        }
+  <meta charset="UTF-8">
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta name="viewport"
+        content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
+  <link rel="stylesheet" href="../static/css/common.css">
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <title>login</title>
+  <style>
+    .container {
+      width: 1000px;
+      margin: 20px;
 
-        div, form {
-            margin-top: 20px;
-        }
-    </style>
-    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
-    <script src="http://captcha.guard.qcloud.com/template/TCapIframeApi.js?appid=1253204159&clientype=2&lang=2052&asig=rtBmYyDgYmOGndGjYWT0_hdjaoDvHOhP8YnNpQn0a48ablWSPBrj3M1j1vnG58LJdzc0D1lhV0DN6Bcmf0lZYW7V1TV6RrA2"></script>
+    }
+
+    .wrapper {
+      margin-top: 20px;
+    }
+
+    .demo-ruleForm{
+      width: 460px;
+    }
+  </style>
+  <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+  <script src="http://captcha.guard.qcloud.com/template/TCapIframeApi.js?appid=1253204159&clientype=2&lang=2052&asig=rtBmYyDgYmOGndGjYWT0_hdjaoDvHOhP8YnNpQn0a48ablWSPBrj3M1j1vnG58LJdzc0D1lhV0DN6Bcmf0lZYW7V1TV6RrA2"></script>
 </head>
 <body>
 <div class="container">
-    <h1>login</h1>
-    <div>
-        <button class="captcha">获取验证码</button>
-        <button class="captcha2">获取验证码2</button>
-        <div class="captcha-wrapper">
-            <img src="" alt="" width="200" height="200" />
-        </div>
+
+
+  <div id="app">
+    <h1>login页面</h1>
+
+    <!--1、验证码功能（普通）-->
+    <div class="wrapper">
+      <h2>1、验证码功能（普通）</h2>
+      <el-button type="primary" @click="getCaptcha">刷新验证码</el-button>
+      <div class="captcha-wrapper" v-html="captcha"></div>
     </div>
-    <div id="TCaptcha" style="width:300px;height:40px;"></div>
-    <form id="upload-form" enctype="multipart/form-data">
+
+    <!--2、验证码功能（高级脚本）-->
+    <div class="wrapper">
+      <h2>2、验证码功能（高级脚本）</h2>
+      <div id="TCaptcha" style="width:300px;height:40px;"></div>
+    </div>
+
+    <!--3、原生文件上传-->
+    <div class="wrapper">
+      <h2>3、原生文件上传</h2>
+      <form id="upload-form" enctype="multipart/form-data">
         <input type="file" class="file-input" name="file">
         <button class="upload-btn">点击上传</button>
-    </form>
+      </form>
+    </div>
 
-    <div>
-        <input type="text" id="name" name="name" value="admin" />
-        <input type="password" id="password" name="password" value="admin" />
-        <button id="login-btn">登录</button>
+    <!--4、表单提交，登录-->
+    <div class="wrapper">
+      <h2>4、表单提交，登录</h2>
+      <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm" label-width="300px">
+        <el-form-item label="用户名" prop="name">
+          <el-input type="text" v-model="ruleForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input type="password" v-model="ruleForm.password" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
+          <el-button @click="resetForm('ruleForm')">重置</el-button>
+        </el-form-item>
+      </el-form>
     </div>
-    <div>
-        <img src="/static/images/demo1.jpg" alt="" width="500">
+
+    <!--5、原生点击下载-->
+    <div class="wrapper">
+      <h2>5、原生点击下载</h2>
+      <img src="/static/images/demo1.jpg" alt="" width="500">
+      <a href="/static/images/demo1.jpg" download="test1">点击下载</a>
     </div>
+
+    <!--6、文件上传-->
+    <div class="wrapper">
+      <h2>6、文件上传</h2>
+      <el-upload
+              class="upload-demo"
+              ref="upload"
+              :before-upload="beforeUpload"
+              :action="uploadPath"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :file-list="[]"
+              :data="postData"
+              :auto-upload="false">
+        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
+        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+      </el-upload>
+    </div>
+  </div>
 
 </div>
+
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.min.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/WangYuLue/image-conversion/build/conversion.js"></script>
 <script>
-    $('.captcha').click(function () {
+  console.log('imageConversion', imageConversion)
+  new Vue({
+    el: '#app',
+    data() {
+      return {
+        uploadPath: 'http://localhost:8080/upload',
+        uploadData: {},
+        postData: {name: '傻逼陈清', age: 30},
+        captcha: '',
+        ruleForm: {
+          name: '',
+          password: ''
+        },
+        rules: {
+          name: {
+            required: true, message: '用户名不能为空', trigger: 'blur'
+          },
+          password: {
+            required: true, message: '密码不能为空', trigger: 'blur'
+          },
+        }
+      }
+    },
+    mounted() {
+      this.getCaptcha()
+    },
+    methods: {
+      /**
+       * 获取验证码方法
+       * @param 无
+       */
+      getCaptcha() {
         $.ajax({
-            type: "POST",
-            url: "captcha",
-            data: "name=John&location=Boston",
-            success: function (msg) {
-                console.log(msg)
-                $('.captcha-wrapper').append(msg.img)
-            }
+          type: "POST",
+          url: "captcha",
+          data: "name=John&location=Boston",
+          success: (msg) => {
+            this.captcha = msg.img
+          },
+          fail(err) {
+            console.error(err)
+          }
         });
-    })
-
-    $('.captcha2, .captcha-wrapper img').click(function () {
-      let {protocol, host} = location
-      let src = `${protocol}//${host}/captcha2?${new Date().getTime()}`
-      $('.captcha-wrapper img').attr('src', src)
-      // console.log(src)
-    })
-
-    $('.file-input').change(function () {
-        console.log($(this)[0].files)
-    })
-
-    $('.upload-btn').click(function () {
-        let formData = new FormData($('#upload-form')[0]);
-        formData.append('name', 'xxx')
+      },
+      /**
+       * 登录方法: session只能对于1个网站1号的限制，做不到多号
+       * @param 无
+       */
+      login(){
         $.ajax({
-            url: "/upload",
-            type: "post",
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (data) {
-                console.log(data)
-            },
-            error: function (e) {
+          url: '/login',
+          // type: 'get',
+          type: 'post',
+          data: {
+            ...this.ruleForm
+          },
+          success: (data, textStatus, request) => {
+            if (data.status === 200) {
+              location.href = '/loged'
+            } else {
+              console.log(data)
+              this.$message.error(data.msg || '服务内部错误');
             }
-        });
-        return false
-    })
-
-    // session只能对于1个网站1号的限制，做不到多号
-    $('#login-btn').click(function(){
-        $.ajax({
-            url: '/login',
-            // type: 'get',
-            type: 'post',
-            data: {
-                name: $('#name').val(),
-                password: $('#password').val()
-            },
-            success: (data, textStatus, request) => {
-                if(data.status === 200){
-                   location.href = '/loged'
-                }else{
-                    console.log(data)
-                }
-            },
-            error: (XMLHttpRequest, textStatus, errorThrown) => {
-                // 通常 textStatus 和 errorThrown 之中
-                // 只有一个会包含信息
-                //this; // 调用本次AJAX请求时传递的options参数
-            },
-            // dataType: 'jsonp',
-            dataType: 'json'
+          },
+          error: (XMLHttpRequest, textStatus, errorThrown) => {
+            // 通常 textStatus 和 errorThrown 之中
+            // 只有一个会包含信息
+            //this; // 调用本次AJAX请求时传递的options参数
+            this.$message.error('服务内部错误');
+          },
+          // dataType: 'jsonp',
+          dataType: 'json'
         })
-    })
+      },
+      /**
+       * 表单检验
+       * @param formName
+       */
+      submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.login()
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      /**
+       * 重置表单
+       * @param formName
+       */
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
+      },
+      /**
+       *
+       */
+      submitUpload() {
+        this.$refs.upload.submit();
+      },
+      /**
+       *
+       * @param file
+       * @param fileList
+       */
+      handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      /**
+       *
+       * @param file
+       */
+      handlePreview(file) {
+        console.log(file);
+      },
+      /**
+       *
+       * @param file
+       * @returns {Promise<any>}
+       */
+      beforeUpload(file) {
+        return new Promise((resolve, reject) => {
+          // let isLt2M = file.size / 1024 / 1024 < 4 // 判定图片大小是否小于4MB
+          // if (isLt2M) {
+          //   resolve(file)
+          // }
+          console.log('file', file) // 压缩到400KB,这里的400就是要压缩的大小,可自定义
+          imageConversion.compressAccurately(file, 5).then(res => {
+            console.log('res', res)
+            let a = new FileReader()
+            a.onload = function (e) {
+              console.log(e.target.result)
+              window.open(e.target.result);
+              return e.target.result
+            }
+            a.readAsDataURL(res)
+            // console.log('a', a)
+            // window.open(a.result);
+            resolve(res)
+          })
+        })
+      },
+      /**
+       *
+       */
+      handleSuccess() {
+      },
+      /**
+       *
+       */
+      hanldeError() {
+      },
+    }
+
+  })
+</script>
+<script>
+
+  /**
+   * 原生文件上传方式FormData
+   */
+
+  $('.file-input').change(function () {
+    console.log($(this)[0].files)
+  })
+
+  $('.upload-btn').click(function () {
+    let formData = new FormData($('#upload-form')[0]);
+    formData.append('name', 'xxx')
+    $.ajax({
+      url: "/upload",
+      type: "post",
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function (data) {
+        console.log(data)
+      },
+      error: function (e) {
+      }
+    });
+    return false
+  })
 
 </script>
 <script type="text/javascript">
-    var capOption = {callback: cbfn};
-    capInit(document.getElementById("TCaptcha"), capOption);
+  var capOption = {callback: cbfn};
+  capInit(document.getElementById("TCaptcha"), capOption);
 
-    //回调函数：验证码页面关闭时回调
-    function cbfn(retJson) {
-        if (retJson.ret == 0) {
-            // 获取ticket，提交服务器校验时用
-            var ticket = retJson.ticket;
-            //这里提交服务器校验
-        }
-        else {
-            //用户关闭验证码页面，没有验证
-        }
+  //回调函数：验证码页面关闭时回调
+  function cbfn(retJson) {
+    if (retJson.ret == 0) {
+      // 获取ticket，提交服务器校验时用
+      var ticket = retJson.ticket;
+      //这里提交服务器校验
     }
+    else {
+      //用户关闭验证码页面，没有验证
+    }
+  }
 </script>
 </body>
 </html>

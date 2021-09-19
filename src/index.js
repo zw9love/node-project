@@ -4,6 +4,8 @@
  **/
 let {sendMail, getRandomString, aesEncrypt, aesDecrypt} = require('./utils/index.js')
 let {getData, postData} = require('./utils/http.js')
+const imageConversion = require("image-conversion")
+console.log('imageConversion', imageConversion)
 const fs = require('fs');
 // const redis = require("redis");
 // const client = redis.createClient();

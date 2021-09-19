@@ -142,8 +142,8 @@ let num = 0
 
 // 单独爬取单页面
 let scrapeHupuBBS = async () => {
-  // const browser = await puppeteer.launch({headless: false});
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({headless: false});
+  // const browser = await puppeteer.launch();
   const url = 'https://bbs.hupu.com/all-gambia'
   const page = await browser.newPage();
   await page.goto(url);
@@ -247,11 +247,83 @@ let scrapeHupuBBS = async () => {
   return arr;
 };
 
-// scrapeHupuBBS().then((value) => {
-//   // console.log(value); // Success!
-//   // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
-//   console.log(`\x1B[32m爬取了虎扑bbs热搜条数 = ${num}\x1B[0m`); // Success!
-// });
+// 单独爬取单页面
+let scrapeHupuBBSNew = async () => {
+  const browser = await puppeteer.launch({headless: false});
+  // const browser = await puppeteer.launch();
+  const url = 'https://bbs.hupu.com/all-gambia'
+  const page = await browser.newPage();
+  await page.goto(url);
+  const lenResult = await page.evaluate(() => {
+    return {
+      listCellLength: $('.list-item-wrap').length
+    }
+  });
+  // console.log('虎扑bbs热搜条数 = ', lenResult.listCellLength)
+  logger.info(`\x1B[32m虎扑bbs热搜条数 = ${lenResult.listCellLength}\x1B[0m`);
+  let arr = []
+  for (let i = 1; i <= lenResult.listCellLength; i++) {
+    const link = await page.$(`.bbs-index-web-middle .list-item-wrap:nth-child(${i + 1}) a`)
+    const href = await page.$eval(`.bbs-index-web-middle .list-item-wrap:nth-child(${i + 1}) a`, el => el.href)
+    if (link) {
+      // 1、使用page.waitFor
+      // 2、不使用page.waitFor
+      let newPage = await browser.newPage()
+      await newPage.goto(href, {timeout: 0})
+      // newPage.on('error', err => {
+      //   console.log('页面错误 ', err )
+      // })
+
+      let path = newPage.url()
+      // let searchSql = 'select * from bbs_hot where path = ?';
+      // let searchSqlParams = [path]
+      // execQuery(searchSql, searchSqlParams).then(async (result) => {
+      //   if (result.length) return
+      const res = await newPage.evaluate(() => {
+        // let path = $(window)[0].location.href
+        let content = $('.thread-content-detail').html()
+        let title = $('.bbs-post-web-main-title-provider .name').text()
+        let author = $('.post-user-comp-info-top-name').text()
+        let time = $('.post-user-comp-info-top-time').text()
+        return {
+          title,
+          author,
+          content,
+          time,
+          // path
+        }
+      });
+      let sql = 'INSERT INTO bbs_hot(id,title, content, article_time, author, create_time, path) VALUES(?,?,?,?,?,?,?)';
+      let sqlParams = [getRandomString(), res.title, res.content, res.time, res.author, getTime(), path]
+      // console.log('res', res)
+      execQuery(sql, sqlParams).then((result) => {
+        logger.info(`\x1B[32m爬虫一条数据成功！ ${++num}  href = ${href}\x1B[0m`);
+        // console.log(`\x1B[32m爬虫一条数据成功！ ${++num}  href = ${href}\x1B[0m`)
+      }).catch((error) => {
+        if(error.toString().includes('ER_DUP_ENTRY')){
+          // console.error('爬虫一条数据失败，数据重复！')
+          logger.error('\x1B[31m爬虫一条数据失败，数据重复！\x1B[0m');
+        }else{
+          // console.error('爬虫一条数据失败！', error)
+          logger.error('\x1B[31m爬虫一条数据失败！' + error + '\x1B[0m');
+        }
+      })
+      arr.push(res)
+      await newPage.close()
+      // }).catch((error) => {
+      // })
+    }
+  }
+
+  browser.close();
+  return arr;
+};
+
+scrapeHupuBBS().then((value) => {
+  // console.log(value); // Success!
+  // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
+  console.log(`\x1B[32m爬取了虎扑bbs热搜条数 = ${num}\x1B[0m`); // Success!
+});
 
 // 分页爬取
 let scrapeHupuBBSArticle = async () => {
@@ -450,11 +522,11 @@ let scrapeHupuBBSArticle = async () => {
   return arr;
 };
 
-scrapeHupuBBSArticle().then((value) => {
-  // console.log(value); // Success!
-  // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
-  console.log(`\x1B[32m总共成功爬取了虎扑bbs条数 = ${num}\x1B[0m`); // Success!
-});
+// scrapeHupuBBSArticle().then((value) => {
+//   // console.log(value); // Success!
+//   // console.log('爬取了虎扑bbs热搜条数 = ', value.length); // Success!
+//   console.log(`\x1B[32m总共成功爬取了虎扑bbs条数 = ${num}\x1B[0m`); // Success!
+// });
 
 
 let scrapeHKMinisite = async () => {
