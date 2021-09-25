@@ -36,11 +36,11 @@ const svgCaptcha = require('svg-captcha')
 const multipart = require('connect-multiparty')
 const multer = require('multer');
 const storage = multer.diskStorage({
-    // //设置上传后文件路径，uploads文件夹会自动创建。
+    // 设置上传后文件路径，uploads文件夹会自动创建。
     destination: function (req, file, cb) {
         cb(null, './uploads')
     },
-    //给上传文件重命名，获取添加后缀名
+    // 给上传文件重命名，获取添加后缀名
     filename: function (req, file, cb) {
         let fileFormat = (file.originalname).split(".");
         // console.log(file)
@@ -87,6 +87,8 @@ app.all("*", (req, res, next) => {
 
 app.use('/', demoRouter);
 app.use('/user', userRouter);
+
+// 设置session
 app.use(session({
     secret: '123456',
     name: 'node',   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
@@ -97,8 +99,10 @@ app.use(session({
 }));
 
 
-
-// // 普通get
+/**
+ * 登录接口
+ * method: post
+ */
 app.post('/login', (req, res, next) => {
     // console.log(req)
     let name = req.body.name
@@ -127,7 +131,10 @@ app.get('/login', (request, response, next) => {
     // })
 })
 
-// 渲染页面
+
+/**
+ * 用户访问/loged路径，即登录之后页面
+ */
 app.get('/loged', (req, res, next) => {
 
     if(req.session.loginUser){
@@ -153,7 +160,9 @@ app.get('/loged', (req, res, next) => {
     }
 })
 
-// 退出登录
+/**
+ * 退出登录
+ */
 app.get('/logout', function(req, res, next){
     // 备注：这里用的 session-file-store 在destroy 方法里，并没有销毁cookie
     // 所以客户端的 cookie 还是存在，导致的问题 --> 退出登陆后，服务端检测到cookie
@@ -171,15 +180,19 @@ app.get('/logout', function(req, res, next){
 })
 
 
-// 测试下载链接
+/**
+ * 返回下载文件链接
+ */
 app.get('/testdownload', (request, response, next) => {
-    let path = './public/static/images/demo1.jpg'
+    // let path = './public/static/images/demo1.jpg' // 图片
+    let path = './public/static/files/曾威简历.docx' //word文档
     response.download(path)
 })
 
 
-
-// 测试验证码
+/**
+ * 验证码接口
+ */
 app.post('/captcha', (req, res, next) => {
     let codeConfig = {
         size: 5,// 验证码长度
@@ -219,6 +232,8 @@ app.get('/captcha2', (req, res, next) => {
 // 拿到FormData上传的参数
 // app.post('/upload', multipartMiddleware, function (request, response, next) {
 app.post('/upload', uploadInfo.single('file'), function (request, response, next) {
+    // request.body formdata的值
+    // request.file 具体文件信息
     console.log(request.body, request.file)
     try {
         response.json({code: 200, message: 'hello world', data: ''});
@@ -227,7 +242,10 @@ app.post('/upload', uploadInfo.single('file'), function (request, response, next
     }
 })
 
-// 发邮件
+
+/**
+ * 发邮件
+ */
 app.get('/sendMail', (request, response, next) => {
     sendMail({
         // recipient:'18514075699@163.com,823334587@qq.com',
@@ -270,7 +288,9 @@ app.get('/aesDecrypt', (request, response, next) => {
     response.json({code: 200, message:"成功", data: aesDecrypt(aesEncrypt('123'))})
 })
 
-// http的get请求
+/**
+ * 服务器去调第三方接口，http的get请求
+ */
 app.get('/getHttpData', function(req, res) {
     // http模块获取其他服务器数据
     getData('/user/pagination', req.query).then(data => {
@@ -280,7 +300,9 @@ app.get('/getHttpData', function(req, res) {
     })
 });
 
-// http的post请求
+/**
+ * 服务器去调第三方接口，http的post请求
+ */
 app.post('/postHttpData', function(req, res) {
     // http模块获取其他服务器数据
     postData('/user/add', req.body).then(data => {

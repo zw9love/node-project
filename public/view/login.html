@@ -108,8 +108,10 @@
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/WangYuLue/image-conversion/build/conversion.js"></script>
-<script>
+<script type="module">
   console.log('imageConversion', imageConversion)
+  import {name} from '../static/js/import'
+  console.log('name', name)
   new Vue({
     el: '#app',
     data() {

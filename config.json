@@ -1,7 +1,7 @@
 {
   "host": "localhost",
   "port": "3306",
-  "database": "hupu",
+  "database": "test",
   "user": "root",
   "password": "159357",
   "connectionLimit": 10,

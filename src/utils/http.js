@@ -7,11 +7,12 @@ const port = 8080
 function getData(path, params = {}){
     let data = {...params, time: new Date().getTime()};//这是需要提交的数据
     let content = querystring.stringify(data);
-    console.log(path + '?' + content)
+    let url = path + '?' + content
+    console.log('url', url)
     let options = {
         hostname: apiHost,
         port: port,
-        path: path + '?' + content,
+        path: url,
         method: 'GET',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -49,7 +50,7 @@ function getData(path, params = {}){
 function postData(path, params){
     let data = {...params, time: new Date().getTime()};//这是需要提交的数据
     let content = querystring.stringify(data);
-    console.log(content)
+    console.log('content', content)
     let options = {
         hostname: apiHost,
         port: port,

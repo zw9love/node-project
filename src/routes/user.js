@@ -60,7 +60,7 @@ router.post('/add', (request, response, next) => {
     let sql = 'INSERT INTO user(name,age, money) VALUES(?,?,?)';
     let sqlParams = [name || '', age || '0', money || 0]
     execQuery(sql, sqlParams).then((result) => {
-        response.json({code: 200, message: 'hello world', data: ''});
+        response.json(null);
     }).catch((error) => {
         response.json({code: 400, message: error, data: {}});
     })
