@@ -23,6 +23,10 @@
     .demo-ruleForm{
       width: 460px;
     }
+
+    /*a[xxx]{*/
+      /*color: greenyellow;*/
+    /*}*/
   </style>
   <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
   <script src="http://captcha.guard.qcloud.com/template/TCapIframeApi.js?appid=1253204159&clientype=2&lang=2052&asig=rtBmYyDgYmOGndGjYWT0_hdjaoDvHOhP8YnNpQn0a48ablWSPBrj3M1j1vnG58LJdzc0D1lhV0DN6Bcmf0lZYW7V1TV6RrA2"></script>
@@ -73,11 +77,13 @@
       </el-form>
     </div>
 
-    <!--5、原生点击下载-->
+    <!--5、点击下载-->
     <div class="wrapper">
-      <h2>5、原生点击下载</h2>
-      <img src="/static/images/demo1.jpg" alt="" width="500">
-      <a href="/static/images/demo1.jpg" download="test1">点击下载</a>
+      <h2>5、点击下载</h2>
+      <!--<img src="/static/images/demo1.jpg" alt="" width="500">-->
+      <!--<a href="/static/files/曾威简历.docx" download="test1">同域点击下载</a>-->
+      <!--<a href="http://localhost:8081/static/files/曾威简历.docx" download="test123666">跨域点击下载</a>-->
+      <el-button @click="downFile">跨域点击下载</el-button>
     </div>
 
     <!--6、文件上传-->
@@ -105,13 +111,59 @@
 <!-- import Vue before Element -->
 <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
 <!-- import JavaScript -->
-<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js" ></script>
 <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/WangYuLue/image-conversion/build/conversion.js"></script>
-<script type="module">
-  console.log('imageConversion', imageConversion)
-  import {name} from '../static/js/import'
-  console.log('name', name)
+<script src="https://cdn.bootcdn.net/ajax/libs/downloadjs/1.4.8/download.min.js"></script>
+<script>
+  // 下载
+  // @param  {String} url 目标文件地址
+  // @param  {String} filename 想要保存的文件名称
+  function courseDownload(url, filename) {
+    getBlob(url, function(blob) {
+      saveAs(blob, filename);
+    })
+  }
+  function getBlob(url,cb) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'blob';
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        cb(xhr.response);
+      }
+    };
+    xhr.send();
+  }
+  // 保存
+  // @param  {Blob} blob
+  // @param  {String} filename 想要保存的文件名称
+  function saveAs(blob, filename) {
+    if (window.navigator.msSaveOrOpenBlob) {
+      navigator.msSaveBlob(blob, filename);
+    } else {
+      var link = document.createElement('a');
+      var body = document.querySelector('body');
+
+      link.href = window.URL.createObjectURL(blob);
+      link.download = filename;
+
+      // fix Firefox
+      link.style.display = 'none';
+      body.appendChild(link);
+
+      link.click();
+      body.removeChild(link);
+
+      window.URL.revokeObjectURL(link.href);
+    }}
+</script>
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.3.6/require.min.js"></script>
+<script defer>
+
+  // console.log('imageConversion', imageConversion)
+  // import {name} from '../static/js/import'
+  // console.log('name', name)
   new Vue({
     el: '#app',
     data() {
@@ -138,6 +190,11 @@
       this.getCaptcha()
     },
     methods: {
+      downFile(){
+        // 方法1
+        // courseDownload('http://localhost:8081/static/files/曾威简历.docx','test123666.docx') // 文件
+        courseDownload('/static/images/demo1.jpg','test123666.jpg') // 图片
+      },
       /**
        * 获取验证码方法
        * @param 无
