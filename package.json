@@ -45,5 +45,10 @@
   "apidoc": {
     "title": "接口文档",
     "url": "http://localhost:3000"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
   }
 }
