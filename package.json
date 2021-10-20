@@ -37,6 +37,9 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "@commitlint/cli": "^13.2.1",
+    "@commitlint/config-conventional": "^13.2.0",
+    "husky": "^7.0.2",
     "nodemon": "^1.19.1"
   },
   "apidoc": {
