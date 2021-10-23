@@ -38,6 +38,13 @@
   <div id="app">
     <h1>login页面</h1>
 
+    <div v-for="item in value">{{item}}</div>
+
+    <el-button type="primary" @click="addSet">新增一个set</el-button>
+
+    <div>{{mapValue.get('p')}}</div>
+    <el-button type="primary" @click="setMap">改变map</el-button>
+
     <!--1、验证码功能（普通）-->
     <div class="wrapper">
       <h2>1、验证码功能（普通）</h2>
@@ -167,6 +174,8 @@
   new Vue({
     el: '#app',
     data() {
+      const m = new Map();
+      m.set('p', 'Hello World')
       return {
         uploadPath: 'http://localhost:8080/upload',
         uploadData: {},
@@ -183,13 +192,25 @@
           password: {
             required: true, message: '密码不能为空', trigger: 'blur'
           },
-        }
+        },
+        value: new Set([1, 2, 3, 4, 4]),
+        mapValue: m
       }
+    },
+    created(){
     },
     mounted() {
       this.getCaptcha()
     },
     methods: {
+      setMap(){
+        console.log('setMap')
+        this.mapValue.set('p', 'xxx')
+      },
+      addSet(){
+        console.log('addSet')
+        this.value.add(6)
+      },
       downFile(){
         // 方法1
         // courseDownload('http://localhost:8081/static/files/曾威简历.docx','test123666.docx') // 文件
