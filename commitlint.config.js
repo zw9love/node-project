@@ -8,6 +8,7 @@
  * docs：仅文档新增/改动
  * chore：构建过程或辅助工具的变动
  */
+
 module.exports = {
   extends: [
     '@commitlint/config-conventional'
