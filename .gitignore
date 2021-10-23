@@ -4,6 +4,7 @@ node_modules
 uploads
 apidoc
 *.log
+CHANGELOG.md
 
 # local env files
 .env.local
