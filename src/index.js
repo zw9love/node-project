@@ -5,7 +5,7 @@
 let {sendMail, getRandomString, aesEncrypt, aesDecrypt} = require('./utils/index.js')
 let {getData, postData} = require('./utils/http.js')
 const imageConversion = require("image-conversion")
-console.log('imageConversion', imageConversion)
+// console.log('imageConversion', imageConversion)
 const fs = require('fs');
 // const redis = require("redis");
 // const client = redis.createClient();
@@ -26,6 +26,7 @@ const fs = require('fs');
 
 const md5 = require('blueimp-md5')
 const child_process = require('child_process');
+const fork = child_process.fork
 const express = require('express');
 const app = express();
 const session = require('express-session')
@@ -342,8 +343,24 @@ app.post('*', (request, response, next) => {
 })
 
 
+// 生成apidoc文档,
+// exec有大小限制，可设置options，有回调
+// spawn无大小限制，无回调
 child_process.exec('apidoc -i src/ -o public/apidoc/', function (error, stdout, stderr) {});
 
+// 开启多个子线程通信，fork执行node脚本，开启线程通信
+// const cpus = require('os').cpus().length
+// console.log('cpus', cpus)
+// for(let i = 0; i < cpus; i++){
+//   const child = fork('./src/process/test.js')
+//   child.on("message",(msg) => {
+//     console.log(`[parent] get a data from child is ${msg}\n`);
+//   });
+//   child.send("hello child");
+// }
+
+
+// 启动服务
 const server = app.listen(8080, function () {
 
     const host = server.address().address
@@ -353,20 +370,21 @@ const server = app.listen(8080, function () {
     // openDefaultBrowser("http://localhost:" + port)
 })
 
-const openDefaultBrowser = function (url) {
-    var exec = child_process.exec;
-    // console.log(process.platform)
-    switch (process.platform) {
-        case "darwin":
-            exec('open ' + url);
-            break;
-        case "win32":
-            exec('start ' + url);
-            break;
-        default:
-            exec('xdg-open', [url]);
-    }
-}
+// 自动打开浏览器
+// const openDefaultBrowser = function (url) {
+//     var exec = child_process.exec;
+//     // console.log(process.platform)
+//     switch (process.platform) {
+//         case "darwin":
+//             exec('open ' + url);
+//             break;
+//         case "win32":
+//             exec('start ' + url);
+//             break;
+//         default:
+//             exec('xdg-open', [url]);
+//     }
+// }
 
 // -----------------------------测试多进程cluster-------------------------------
 

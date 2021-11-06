@@ -7,7 +7,7 @@
   <meta name="viewport"
         content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
   <link rel="stylesheet" href="../static/css/common.css">
-  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <!--<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
   <title>login</title>
   <style>
     .container {
@@ -29,7 +29,7 @@
     /*}*/
   </style>
   <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
-  <script src="http://captcha.guard.qcloud.com/template/TCapIframeApi.js?appid=1253204159&clientype=2&lang=2052&asig=rtBmYyDgYmOGndGjYWT0_hdjaoDvHOhP8YnNpQn0a48ablWSPBrj3M1j1vnG58LJdzc0D1lhV0DN6Bcmf0lZYW7V1TV6RrA2"></script>
+  <!--<script src="http://captcha.guard.qcloud.com/template/TCapIframeApi.js?appid=1253204159&clientype=2&lang=2052&asig=rtBmYyDgYmOGndGjYWT0_hdjaoDvHOhP8YnNpQn0a48ablWSPBrj3M1j1vnG58LJdzc0D1lhV0DN6Bcmf0lZYW7V1TV6RrA2"></script>-->
 </head>
 <body>
 <div class="container">
@@ -39,6 +39,7 @@
     <h1>login页面</h1>
 
     <div v-for="item in value">{{item}}</div>
+    <div>{{name}}</div>
 
     <el-button type="primary" @click="addSet">新增一个set</el-button>
 
@@ -87,7 +88,7 @@
     <!--5、点击下载-->
     <div class="wrapper">
       <h2>5、点击下载</h2>
-      <!--<img src="/static/images/demo1.jpg" alt="" width="500">-->
+      <img src="/static/images/demo1.jpg" alt="" width="500">
       <!--<a href="/static/files/曾威简历.docx" download="test1">同域点击下载</a>-->
       <!--<a href="http://localhost:8081/static/files/曾威简历.docx" download="test123666">跨域点击下载</a>-->
       <el-button @click="downFile">跨域点击下载</el-button>
@@ -166,8 +167,82 @@
     }}
 </script>
 <script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.3.6/require.min.js"></script>
-<script defer>
+<!--<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.3.6/require.min.js999"></script>-->
+<script>
+  console.log(111)
+  window.onerror = function(msg, url, row, col, error){
+    console.log('window.onerror进来了咩')
+    if (error) {
+      // console.error(error.stack || msg);
+    }
+    // console.log('msg', msg)
+    // console.log('url', url)
+    // console.log('row', row)
+    // console.log('col', col)
+    // console.log('error', error.stack)
+  }
 
+
+  const obj = {
+    a: 1,
+    data: {
+      a: 100,
+      getParams: () => {
+        return this.a
+      }
+    },
+    getParams: function() {
+      return this.a
+    }
+  }
+
+  const fn1 = obj.getParams
+  const fn2 = obj.data.getParams
+
+  // console.log('fn1', fn1())
+  // console.log('obj.data.getParams', obj.data.getParams())
+  // console.log('obj.getParams', obj.getParams()) // 1
+
+  // function test(a = 100){
+  //   console.log(a)
+  //   var a = 999
+  //   console.log(a)
+  // }
+  // test()
+
+  // function testName(){
+  //   this.name = function(){
+  //     alert(1)
+  //   }
+  //   return this
+  // }
+
+  // 捕获未处理的异常
+  window.addEventListener('unhandledrejection',function (event) {
+    console.log('unhandledrejection', event); // 打印抛出的异常
+  })
+
+    window.addEventListener('DOMContentLoaded',function(){
+      console.log('DOMContentLoaded passed');
+    });
+
+  window.addEventListener('load',function(){
+    console.log('load passed');
+  });
+
+  // let p = new Promise((resolve, reject) => {
+  //   resolve(100)
+  // })
+  // p.then(res => {
+  //   console.log('res', res)
+  //   aaa
+  // }).catch(err => {
+  //   // throw new Error(err)
+  // })
+
+  Vue.config.errorHandler = function (err, vm, info) {
+    console.log('Vue.config.errorHandler进来了咩')
+  }
   // console.log('imageConversion', imageConversion)
   // import {name} from '../static/js/import'
   // console.log('name', name)
@@ -194,18 +269,47 @@
           },
         },
         value: new Set([1, 2, 3, 4, 4]),
-        mapValue: m
+        mapValue: m,
+        name: ''
       }
     },
-    created(){
+    updated(){
+      console.log('改变了')
+    },
+    async created(){
+      console.log('window.performance', window.performance)
+      // this.name = 'xxx'
+      // this.name = 'xxx222'
+      // let res1 = await this.getApi(100)
+      // console.log('res1', res1)
+      // let res2 = await this.getApi(200)
+      // console.log('res2', res2)
+      // let res3 = await this.getApi(300)
+      // console.log('res3', res3)
+      // let res4 = await this.getApi(400)
+      // console.log('res4', res4)
+      // let res5 = await this.getApi(500)
+      // console.log('res5', res5)
+
     },
     mounted() {
       this.getCaptcha()
+      // this.name = 'xxx'
+      // this.name = 'xxx222'
     },
     methods: {
+      async getApi(res){
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve(res)
+          }, 5000)
+        })
+      },
       setMap(){
         console.log('setMap')
         this.mapValue.set('p', 'xxx')
+        aaa()
+
       },
       addSet(){
         console.log('addSet')
@@ -375,21 +479,23 @@
   })
 
 </script>
-<script type="text/javascript">
-  var capOption = {callback: cbfn};
-  capInit(document.getElementById("TCaptcha"), capOption);
+<!--<script type="text/javascript">-->
+  <!--var capOption = {callback: cbfn};-->
+  <!--capInit(document.getElementById("TCaptcha"), capOption);-->
 
-  //回调函数：验证码页面关闭时回调
-  function cbfn(retJson) {
-    if (retJson.ret == 0) {
-      // 获取ticket，提交服务器校验时用
-      var ticket = retJson.ticket;
-      //这里提交服务器校验
-    }
-    else {
-      //用户关闭验证码页面，没有验证
-    }
-  }
-</script>
+  <!--//回调函数：验证码页面关闭时回调-->
+  <!--function cbfn(retJson) {-->
+    <!--if (retJson.ret == 0) {-->
+      <!--// 获取ticket，提交服务器校验时用-->
+      <!--var ticket = retJson.ticket;-->
+      <!--//这里提交服务器校验-->
+    <!--}-->
+    <!--else {-->
+      <!--//用户关闭验证码页面，没有验证-->
+    <!--}-->
+  <!--}-->
+<!--</script>-->
+<!--<script defer src="../static/js/test.js"></script>-->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 </body>
 </html>
