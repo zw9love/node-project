@@ -80,9 +80,7 @@ app.use('/', express.static('public', {
 
 const multipartMiddleware = multipart()
 
-// 路由
-const demoRouter = require('./routes/demo');
-const userRouter = require('./routes/user');
+
 
 
 // 相当于拦截器，可用于全局检测token
@@ -101,6 +99,9 @@ app.all("*", (req, res, next) => {
     }
 })
 
+// 路由
+const demoRouter = require('./routes/demo');
+const userRouter = require('./routes/user');
 app.use('/', demoRouter);
 app.use('/user', userRouter);
 
@@ -205,6 +206,16 @@ app.get('/testdownload', (request, response, next) => {
     response.download(path)
 })
 
+/**
+ * 获取二维码
+ */
+app.get('/getQRCode', (request, response, next) => {
+  var qr = require('qr-image');
+  var code = qr.image('https://www.baidu.com', { type: 'png' });
+  response.setHeader('Content-type', 'image/png');  //sent qr image to client side
+  code.pipe(response);
+})
+
 
 /**
  * 验证码接口
@@ -266,10 +277,10 @@ app.get('/sendMail', (request, response, next) => {
     sendMail({
         // recipient:'18514075699@163.com,823334587@qq.com',
         recipient:'18514075699@163.com',
-        title:'情人节情人节',
-        text:'情人节情人节快乐，有附件。',
+        title:'二维码测试，请忽略',
+        text:'二维码测试',
         name: '你大爷',
-        html:'<h1>Hi, weiwei,这是一封测试邮件111222333</h1>',
+        html:'<h1>Hi, 清清,这是一封二维码测试邮件111222333</h1><img src="http://192.168.8.107:8080/getQRCode" alt="qrcode">',
         files:[
             {
                 filename:'config.json',
@@ -346,7 +357,7 @@ app.post('*', (request, response, next) => {
 // 生成apidoc文档,
 // exec有大小限制，可设置options，有回调
 // spawn无大小限制，无回调
-child_process.exec('apidoc -i src/ -o public/apidoc/', function (error, stdout, stderr) {});
+// child_process.exec('apidoc -i src/ -o public/apidoc/', function (error, stdout, stderr) {});
 
 // 开启多个子线程通信，fork执行node脚本，开启线程通信
 // const cpus = require('os').cpus().length
@@ -360,15 +371,37 @@ child_process.exec('apidoc -i src/ -o public/apidoc/', function (error, stdout, 
 // }
 
 
-// 启动服务
-const server = app.listen(8080, function () {
+// 启动服务，开启多进程
+const cluster = require('cluster')
+const http = require('http')
+const {cpus} = require('os')
+const process = require('process')
+const numCPUs = cpus().length;
+if (cluster.isMaster) {
+  console.log(`Primary ${process.pid} is running`);
+
+  // 衍生工作进程。
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+
+  cluster.on('exit', (worker, code, signal) => {
+    console.log(`worker ${worker.process.pid} died`);
+  });
+}else{
+
+  const server = app.listen(8080, function () {
 
     const host = server.address().address
     const port = server.address().port
 
     console.log("应用实例，访问地址为 http://localhost:" + port)
+    console.log(`Worker ${process.pid} started`);
     // openDefaultBrowser("http://localhost:" + port)
-})
+  })
+
+}
+
 
 // 自动打开浏览器
 // const openDefaultBrowser = function (url) {
