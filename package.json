@@ -43,11 +43,18 @@
     "@commitlint/config-conventional": "^13.2.0",
     "cz-conventional-changelog": "^3.3.0",
     "husky": "^7.0.2",
+    "lint-staged": "^12.1.2",
     "nodemon": "^1.19.1"
   },
   "apidoc": {
     "title": "接口文档",
     "url": "http://localhost:3000"
+  },
+  "lint-staged": {
+    "*.{js,vue}": [
+      "eslint --fix",
+      "git add"
+    ]
   },
   "husky": {
     "hooks": {
