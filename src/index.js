@@ -60,6 +60,7 @@ app.set('views', path.join(__dirname, '../public'))
 app.set('view engine', 'html')
 app.use(cookieParser())
 app.use(urlencodedParser);
+app.use(jsonParser);
 
 const imgs = ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff']
 app.use('/', express.static('public', {
@@ -121,7 +122,7 @@ app.use(session({
  * method: post
  */
 app.post('/login', (req, res, next) => {
-    // console.log(req)
+    // console.log(req.body)
     let name = req.body.name
     let password = req.body.password
     // console.log('name = ' + name)
@@ -211,7 +212,7 @@ app.get('/testdownload', (request, response, next) => {
  */
 app.get('/getQRCode', (request, response, next) => {
   var qr = require('qr-image');
-  var code = qr.image('https://www.baidu.com', { type: 'png' });
+  var code = qr.image(request.query.url, { type: 'png' });
   response.setHeader('Content-type', 'image/png');  //sent qr image to client side
   code.pipe(response);
 })
